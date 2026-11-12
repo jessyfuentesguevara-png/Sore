@@ -12,7 +12,7 @@ function esc(texto) {
 function leerConfig() { return leerJSON('sore_config', {}); }
 
 // Textos de los estados y sus etiquetas de colores
-const TEXTO_ESTADO = { pendiente: 'Pendiente', preparando: 'En preparación', listo: 'Listo', entregado: 'Entregado' };
+const TEXTO_ESTADO = { pendiente: 'Recibido', preparando: 'En preparación', listo: 'Listo', entregado: 'Entregado' };
 const TEXTO_TIPO = { comer: 'Comer aquí', llevar: 'Para llevar', domicilio: 'Domicilio' };
 function etiquetaEstado(p) { return `<span class="etiqueta etiqueta--${p.estado}">${TEXTO_ESTADO[p.estado]}</span>`; }
 function etiquetaPago(p) {
@@ -26,106 +26,16 @@ function htmlVacio(titulo, texto) {
     <img src="img/mascota-olla.png" alt="">
     <h2>${esc(titulo)}</h2>
     <p>${esc(texto)}</p>
-    <button type="button" class="boton boton--chico" data-abrir="nuevo">Nuevo pedido</button>
+    <button type="button" class="boton boton--chico" data-abrir="nuevo">Registrar pedido</button>
   </div>`;
 }
 
 // Actualiza el número rojo de la campana
 function actualizarInsignia() {
-  const n = calcularAlertas().length;
-  $('ini-insignia').textContent = n;
-  $('ini-insignia').hidden = !n;
-}
-
-// ----- INICIO -----
-function renderInicio() {
-  const cfg = leerConfig();
-  const hoy = obtenerPedidos('hoy');
-
-  // Saludo según la hora, con el nombre real
-  const h = new Date().getHours();
-  const saludo = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
-  const primerNombre = cfg.nombre ? cfg.nombre.trim().split(/\s+/)[0] : '';
-  $('ini-saludo').textContent = primerNombre ? `${saludo}, ${primerNombre} 👋` : `${saludo} 👋`;
-  $('ini-ejemplo').hidden = !hayEjemplos();
-
-  // Recuadros: pendientes (pendiente + en preparación), listos y entregados
-  $('st-pend').textContent = hoy.filter((p) => p.estado === 'pendiente' || p.estado === 'preparando').length;
-  $('st-listos').textContent = hoy.filter((p) => p.estado === 'listo').length;
-  $('st-entregas').textContent = hoy.filter((p) => p.estado === 'entregado').length;
-
-  // Resumen: total, cobrado y por cobrar, con barra de avance de cobro
-  const cobrado = hoy.filter((p) => p.pagado).reduce((s, p) => s + totalPedido(p), 0);
-  const porCobrar = hoy.filter((p) => !p.pagado).reduce((s, p) => s + totalPedido(p), 0);
-  const total = cobrado + porCobrar;
-  $('ini-total').textContent = dinero(total);
-  $('ini-cobrado').textContent = dinero(cobrado);
-  $('ini-porcobrar').textContent = dinero(porCobrar);
-  $('ini-barra').style.width = (total ? Math.round(cobrado / total * 100) : 0) + '%';
-
-  // Próximas entregas: pedidos de hoy sin entregar, por hora, con el nombre del cliente
-  const proximas = hoy.filter((p) => p.estado !== 'entregado').slice(0, 3);
-  if (!hoy.length) {
-    $('ini-lista').innerHTML = htmlVacio('Aún no hay pedidos hoy', 'Cuando recibas un pedido, se mostrará aquí.');
-  } else if (!proximas.length) {
-    $('ini-lista').innerHTML = '<p class="suave">No tienes entregas pendientes. ¡Buen trabajo!</p>';
-  } else {
-    $('ini-lista').innerHTML = proximas.map((p) => `
-      <button type="button" class="entrega" data-detalle="${p.id}">
-        <div class="entrega__hora">${formatoHora(p.hora)}</div>
-        <div class="entrega__datos">
-          <div class="entrega__cliente">${esc(p.cliente)}</div>
-          <div class="entrega__plato">${esc(p.items.map((i) => `${i.n} ${i.platillo}`).join(', '))}</div>
-        </div>
-        ${etiquetaEstado(p)}
-      </button>`).join('');
-  }
-  actualizarInsignia();
-}
-
-// ----- PEDIDOS -----
-let diaPedidos = 'hoy'; // pestaña activa
-
-// Mensaje de confirmación para WhatsApp
-function mensajeWhatsApp(p) {
-  const negocio = leerConfig().negocio || '';
-  return `Hola ${p.cliente}${negocio ? ', te escribe ' + negocio : ''}. Te confirmo tu pedido #${p.id} para las ${formatoHora(p.hora)}. ¡Gracias!`;
-}
-function enlaceWhatsApp(p) { return `https://wa.me/${p.telefono}?text=${encodeURIComponent(mensajeWhatsApp(p))}`; }
-function enlaceMaps(p) { return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.direccion)}`; }
-
-function renderPedidos() {
-  $('ped-ejemplo').hidden = !hayEjemplos();
-  $('tab-hoy').textContent = `Hoy (${obtenerPedidos('hoy').length})`;
-  $('tab-manana').textContent = `Mañana (${obtenerPedidos('manana').length})`;
-  $('tab-hoy').setAttribute('aria-selected', String(diaPedidos === 'hoy'));
-  $('tab-manana').setAttribute('aria-selected', String(diaPedidos === 'manana'));
-
-  const lista = obtenerPedidos(diaPedidos);
-  if (!lista.length) {
-    $('ped-lista').innerHTML = htmlVacio(
-      diaPedidos === 'hoy' ? 'Aún no hay pedidos hoy' : 'Aún no hay pedidos para mañana',
-      'Cuando registres uno, se mostrará aquí.');
-    return;
-  }
-
-  const choques = buscarChoques(lista);
-  $('ped-lista').innerHTML = lista.map((p) => {
-    const otro = choques[p.id];
-    const aviso = otro ? `<div class="pedido__choque">⚠ Choca con la entrega de ${formatoHora(otro.hora)} (${esc(otro.cliente)})</div>` : '';
-    const items = p.items.map((i) => `<div>${i.n} × ${esc(i.platillo)}${i.para ? ' — para ' + esc(i.para) : ''}</div>`).join('');
-    const maps = p.tipo === 'domicilio' && p.direccion ? `<a class="mini" target="_blank" rel="noopener" href="${enlaceMaps(p)}">📍 Maps</a>` : '';
-    const wa = p.telefono ? `<a class="mini" target="_blank" rel="noopener" href="${enlaceWhatsApp(p)}">💬 WhatsApp</a>` : '';
-    return `
-      <article class="tarjeta pedido" data-detalle="${p.id}">
-        <div class="pedido__arriba"><span class="pedido__hora">${formatoHora(p.hora)}</span><span class="pedido__num">#${p.id} · ${TEXTO_TIPO[p.tipo] || ''}</span></div>
-        <div class="pedido__cliente">${esc(p.cliente)}</div>
-        <div class="pedido__items">${items}</div>
-        <div class="pedido__etiquetas">${etiquetaEstado(p)}${etiquetaPago(p)}<span class="pedido__total">${dinero(totalPedido(p))}</span></div>
-        ${aviso}
-        <div class="pedido__botones">${maps}${wa}</div>
-      </article>`;
-  }).join('');
+  const hay = calcularAlertas().length > 0;
+  // Punto rojo en la campana de Inicio y de Pedidos
+  $('ini-insignia').hidden = !hay;
+  $('ped-insignia').hidden = !hay;
 }
 
 // ----- CLIENTES -----
@@ -244,10 +154,6 @@ document.addEventListener('click', (e) => {
   if (t.closest('[data-cerrar-hoja]')) { t.closest('.hoja').hidden = true; return; }
   // Tocar el fondo oscuro de una hoja también la cierra
   if (t.classList && t.classList.contains('hoja')) { t.hidden = true; return; }
-
-  // Pestañas Hoy / Mañana
-  const pestana = t.closest('.pestana');
-  if (pestana) { diaPedidos = pestana.dataset.dia; renderPedidos(); return; }
 
   // Flecha atrás
   if (t.closest('[data-atras]')) { volver(); return; }

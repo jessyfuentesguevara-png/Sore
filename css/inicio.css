@@ -1,0 +1,88 @@
+/* ===== Inicio (Dashboard) y lista de Pedidos, según el diseño ===== */
+
+/* ----- Encabezado con íconos planos (☰ naranja y campana) ----- */
+.dash-top { position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; min-height: 44px; }
+.dash-top--titulo h1 { flex: 1; text-align: center; font-size: 1.5rem; color: var(--cafe); font-weight: 800; }
+.icono-plano { position: relative; width: 44px; height: 44px; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+.icono-plano svg { width: 28px; height: 28px; fill: none; stroke: var(--naranja-osc); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.icono-plano--oscuro svg, .icono-plano--campana svg { stroke: var(--cafe); }
+/* Punto rojo de la campana (el número no se muestra) */
+.punto-rojo { position: absolute; top: 7px; right: 8px; width: 10px; height: 10px; border-radius: 50%; background: #e5372b; border: 2px solid #fff6ec; font-size: 0; }
+
+/* ----- Inicio: mancha naranja arriba a la izquierda, como el diseño ----- */
+.pantalla--inicio::before { top: -70px; left: -70px; width: 220px; height: 150px; background: #ffb347; opacity: .85; border-radius: 0 0 70% 0; }
+.dash-saludo { position: relative; display: flex; justify-content: space-between; align-items: flex-end; min-height: 96px; margin-top: -6px; }
+.dash-saludo h1 { font-size: 1.7rem; line-height: 1.15; color: var(--cafe); font-weight: 800; }
+.dash-saludo p { margin-top: 4px; font-size: .95rem; color: var(--texto); }
+.dash-saludo .ejemplo { margin-top: 6px; display: inline-block; }
+.dash-mascota { position: absolute; right: -4px; top: -30px; width: 124px; height: auto; z-index: 0; }
+.dash-saludo::after { content: ""; position: absolute; right: -24px; top: -14px; width: 120px; height: 110px; background: #cfe39a; opacity: .7; border-radius: 50% 40% 60% 50%; z-index: -1; }
+.dash-saludo > div { position: relative; z-index: 1; }
+
+/* ----- Tres recuadros de colores ----- */
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.tile { border-radius: 20px; padding: 14px 6px 12px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: 0 4px 12px rgba(120, 70, 20, .08); }
+.tile--durazno { background: #fde5cd; }
+.tile--verde { background: #e4eec6; }
+.tile__ico { width: 38px; height: 38px; margin-bottom: 4px; }
+.tile b { font-size: 1.9rem; line-height: 1.1; color: var(--cafe); }
+.tile span { font-size: .8rem; line-height: 1.15; color: #5b4636; }
+
+/* ----- Ventas de hoy con barras ----- */
+.ventas-card { background: #fff7ee; border-radius: 20px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: stretch; gap: 12px; box-shadow: 0 4px 12px rgba(120, 70, 20, .08); }
+.ventas-card__izq { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ventas-card__titulo { font-weight: 700; color: var(--cafe); }
+.ventas-card__total { font-size: 2.1rem; line-height: 1.1; color: #3a1d0c; }
+.tendencia { font-weight: 800; }
+.tendencia--sube { color: #3c8a2a; } .tendencia--baja { color: #b3261e; }
+.ventas-card__cobro { color: #6b5a4c; margin-top: 4px; }
+.barras { flex: 1; min-width: 110px; max-width: 150px; height: 84px; align-self: flex-end; display: flex; align-items: flex-end; gap: 5px; }
+.barras i { flex: 1; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, #b9d46a, #8fb049); opacity: .75; }
+.barras i.barra-hoy { opacity: 1; background: linear-gradient(180deg, #8fb049, #5f8f2a); }
+
+/* ----- Eventos próximos ----- */
+.titulo-seccion { font-size: 1.1rem; color: var(--cafe); font-weight: 800; }
+.flecha { font-size: 1.6rem; color: var(--cafe); }
+.evento-card { display: flex; align-items: center; gap: 12px; background: #fdebd8; border-radius: 16px; padding: 10px 14px; }
+.evento-card__ico { flex: none; width: 46px; height: 46px; border-radius: 12px; background: #ffd9a0; display: grid; place-items: center; }
+.evento-card__ico svg { width: 30px; height: 30px; }
+.evento-card__txt { display: flex; flex-direction: column; }
+.evento-card__txt small { color: #6b5a4c; }
+
+/* ----- Botón "Registrar pedido" ----- */
+.boton--registrar { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; font-size: 1.15rem; border-radius: 28px; background: linear-gradient(180deg, #f98a2b, #ee6f10); }
+.boton--registrar svg { width: 24px; height: 24px; fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ----- Pedidos: Hoy/Mañana pequeño y filtros en pastilla ----- */
+.dias-mini { display: flex; align-items: center; gap: 6px; margin-top: -4px; }
+.dia-tab { border: 0; background: none; font: inherit; font-size: .9rem; font-weight: 700; color: #8a7766; padding: 6px 10px; border-radius: 14px; cursor: pointer; }
+.dia-tab[aria-selected="true"] { background: #ffe0c2; color: var(--naranja-osc); }
+.dias-mini .ejemplo { margin-left: auto; }
+.filtros { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 6px; scrollbar-width: none; }
+.filtros::-webkit-scrollbar { display: none; }
+.filtro { flex: none; min-height: 42px; padding: 0 16px; border: 0; border-radius: 21px; background: #fff7ee; font: inherit; font-weight: 700; color: var(--cafe); cursor: pointer; box-shadow: 0 2px 6px rgba(120, 70, 20, .08); }
+.filtro[aria-selected="true"] { background: linear-gradient(180deg, #f98a2b, #ee6f10); color: #fff; }
+
+/* ----- Lista de pedidos: foto, #número, hora, platillos • total, estado y flecha ----- */
+.lista-pedidos { display: flex; flex-direction: column; gap: 10px; }
+.fila-wrap { background: #fff7ee; border-radius: 18px; box-shadow: 0 3px 10px rgba(120, 70, 20, .07); overflow: hidden; }
+.fila-pedido { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; background: none; border: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.foto-plato { flex: none; width: 60px; height: 60px; border-radius: 14px; object-fit: cover; background: #f3dcc2; }
+.foto-plato--vacia { display: grid; place-items: center; font-size: 1.7rem; }
+.fila-pedido__datos { flex: 1; min-width: 0; display: flex; flex-direction: column; font-size: .88rem; color: #6b5a4c; }
+.fila-pedido__datos b { font-size: 1.1rem; color: var(--cafe); }
+.fila-pedido__cli { color: var(--cafe); font-weight: 700; }
+.debe { display: block; font-style: normal; font-weight: 800; color: #b3261e; }
+.lista-pedidos { padding-bottom: 70px; } /* espacio para que el botón + no tape la última fila */
+.fila-pedido > i { flex: none; font-style: normal; font-size: 1.6rem; color: var(--cafe); }
+.fila-pedido__choque { padding: 8px 12px; background: #fde4e1; color: #7a1510; font-size: .82rem; font-weight: 700; }
+
+/* Etiquetas de estado de la lista */
+.pill { flex: none; padding: 6px 12px; border-radius: 16px; font-size: .85rem; font-weight: 700; white-space: nowrap; }
+.pill--pendiente  { background: #fbe3a8; color: #5f4300; }
+.pill--preparando { background: #fcd2b4; color: #5f2a00; }
+.pill--listo      { background: #dbecb9; color: #26480f; }
+.pill--entregado  { background: #c9e29a; color: #26480f; }
+
+/* ----- Botón redondo "+" ----- */
+.fab { position: fixed; z-index: 4; bottom: 82px; right: max(16px, calc(50% - 199px)); width: 58px; height: 58px; border: 0; border-radius: 50%; background: linear-gradient(180deg, #f98a2b, #ee6f10); color: #fff; font-size: 2rem; line-height: 1; box-shadow: 0 6px 16px rgba(238, 111, 16, .45); cursor: pointer; }

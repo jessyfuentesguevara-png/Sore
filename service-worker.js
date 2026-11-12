@@ -1,16 +1,17 @@
 // Nombre de la versión de la caché; al cambiarlo, el navegador renueva los archivos guardados.
 // Se subió a v3 porque cambiaron las pantallas y se agregaron imágenes y auth.js.
-const VERSION = 'sore-v6';
+const VERSION = 'sore-v7';
 
 // Archivos guardados para abrir sin internet.
 // Las imágenes de la mascota solo se agregan cuando existe la pantalla que las usa
 // (por ahora: splash y asomada para login).
 const ARCHIVOS = [
-  './', 'index.html', 'css/styles.css', 'css/config.css', 'css/principal.css',
-  'js/app.js', 'js/auth.js', 'js/config.js', 'js/datos.js', 'js/principal.js', 'js/pedido.js',
+  './', 'index.html', 'css/styles.css', 'css/config.css', 'css/principal.css', 'css/inicio.css',
+  'js/app.js', 'js/auth.js', 'js/config.js', 'js/datos.js', 'js/principal.js', 'js/inicio.js', 'js/pedido.js',
   'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png',
-  'img/mascota-splash.png', 'img/mascota-asomada.png', 'img/mascota-bandera.png', 'img/mascota-olla.png'
+  'img/mascota-splash.png', 'img/mascota-asomada.png', 'img/mascota-bandera.png', 'img/mascota-olla.png', 'img/mascota-saludando.png',
+  'img/platillos/huevos.jpg', 'img/platillos/chilaquiles.jpg', 'img/platillos/enchiladas.jpg', 'img/platillos/milanesa.jpg'
 ];
 
 // Al instalarse: guarda en caché los archivos básicos

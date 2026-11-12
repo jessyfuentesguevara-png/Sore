@@ -20,6 +20,8 @@
   <link rel="stylesheet" href="css/config.css">
   <!-- Estilos de Inicio, Pedidos y la barra inferior -->
   <link rel="stylesheet" href="css/principal.css">
+  <!-- Inicio y Pedidos según el diseño -->
+  <link rel="stylesheet" href="css/inicio.css">
 </head>
 <body>
 
@@ -230,68 +232,102 @@
     </div>
   </div>
 
-  <!-- ===== INICIO (Dashboard) ===== -->
-  <section id="pantalla-inicio" class="pantalla pantalla--principal" hidden>
-    <header class="encab">
-      <!-- Hamburguesa: lleva a Perfil, donde están todas las opciones -->
-      <button type="button" class="icono-btn" data-ir="perfil" aria-label="Menú y perfil">
+  <!-- ===== INICIO (Dashboard, según el diseño) ===== -->
+  <section id="pantalla-inicio" class="pantalla pantalla--principal pantalla--inicio" hidden>
+    <header class="dash-top">
+      <!-- ☰ naranja: lleva a Perfil / Configuración -->
+      <button type="button" class="icono-plano" data-ir="perfil" aria-label="Menú y perfil">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
-      <!-- Campana: abre la lista de notificaciones -->
-      <button type="button" class="icono-btn" id="ini-campana" data-abrir="notif" aria-label="Notificaciones">
+      <!-- Campana con punto rojo cuando hay alertas -->
+      <button type="button" class="icono-plano icono-plano--campana" id="ini-campana" data-abrir="notif" aria-label="Notificaciones">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15zM10 21h4"/></svg>
-        <span class="insignia" id="ini-insignia" hidden>0</span>
+        <span class="punto-rojo" id="ini-insignia" hidden></span>
       </button>
     </header>
-    <h1 class="saludo" id="ini-saludo">Buenos días</h1>
-    <span class="ejemplo" id="ini-ejemplo">Datos de ejemplo</span>
 
-    <!-- Tres recuadros con los números del día -->
-    <div class="estadisticas">
-      <div class="stat"><span class="stat__icono stat__icono--naranja">🍳</span><b id="st-pend">0</b><small>Pedidos pendientes</small></div>
-      <div class="stat"><span class="stat__icono stat__icono--verde">✅</span><b id="st-listos">0</b><small>Listos</small></div>
-      <div class="stat"><span class="stat__icono stat__icono--cafe">🛵</span><b id="st-entregas">0</b><small>Entregados</small></div>
+    <!-- Saludo y mascota saludando -->
+    <div class="dash-saludo">
+      <div>
+        <h1 id="ini-saludo">Hola 👋</h1>
+        <p>Aquí tienes un resumen de hoy</p>
+        <span class="ejemplo" id="ini-ejemplo">Datos de ejemplo</span>
+      </div>
+      <img class="dash-mascota" src="img/mascota-saludando.png" alt="">
     </div>
 
-    <!-- Resumen del día: total y cuánto va cobrado -->
-    <div class="tarjeta">
-      <h2>Resumen del día</h2>
-      <div class="resumen__total" id="ini-total">$0</div>
-      <small>Ventas totales</small>
-      <div class="barra-cobro" aria-hidden="true"><i id="ini-barra"></i></div>
-      <div class="resumen__fila">
-        <span>Cobrado <b class="ok" id="ini-cobrado">$0</b></span>
-        <span>Por cobrar <b class="pend" id="ini-porcobrar">$0</b></span>
+    <!-- Tres recuadros de colores con íconos planos -->
+    <div class="tiles">
+      <div class="tile tile--durazno">
+        <svg class="tile__ico" viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="5" width="20" height="24" rx="4" fill="#f27a1a"/><rect x="11" y="2" width="10" height="6" rx="2" fill="#c9570a"/><path d="M11 15h10M11 20h10M11 25h6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+        <b id="st-pend">0</b><span>Pedidos pendientes</span>
+      </div>
+      <div class="tile tile--verde">
+        <svg class="tile__ico" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="#4f9a3a"/><path d="m9.5 16.5 4.5 4.5 8.5-9" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <b id="st-listos">0</b><span>Pedidos listos</span>
+      </div>
+      <div class="tile tile--durazno">
+        <svg class="tile__ico" viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="9" width="17" height="13" rx="2" fill="#b27a2b"/><path d="M19 13h6l5 5v4H19z" fill="#d1993f"/><circle cx="9" cy="24" r="3.2" fill="#3d2b17"/><circle cx="24" cy="24" r="3.2" fill="#3d2b17"/></svg>
+        <b id="st-entregas">0</b><span>Entregas</span>
       </div>
     </div>
 
-    <!-- Próximas entregas, ordenadas por hora -->
-    <div class="tarjeta">
-      <div class="fila-titulo"><h2>Próximas entregas</h2><button type="button" class="enlace-chico" data-ir="pedidos">Ver todos</button></div>
-      <div id="ini-lista"></div>
+    <!-- Ventas de hoy con barras de los últimos 7 días -->
+    <div class="ventas-card">
+      <div class="ventas-card__izq">
+        <span class="ventas-card__titulo">Tus ventas hoy</span>
+        <b class="ventas-card__total" id="ini-total">$0</b>
+        <span class="tendencia" id="ini-tendencia" hidden></span>
+        <small class="ventas-card__cobro" id="ini-cobro"></small>
+      </div>
+      <div class="barras" id="ini-barras" aria-hidden="true"></div>
     </div>
 
     <!-- Eventos: fase 2 -->
-    <div class="tarjeta tarjeta--suave"><h2>Eventos próximos</h2><p class="suave">Próximamente.</p></div>
-
-    <div class="acciones">
-      <button type="button" class="boton boton--chico" data-abrir="nuevo">+ Nuevo pedido</button>
-      <button type="button" class="boton boton--chico boton--sec" data-pendiente="Registrar gasto">+ Gasto</button>
+    <div class="fila-titulo"><h2 class="titulo-seccion">Eventos próximos</h2><span class="flecha" aria-hidden="true">›</span></div>
+    <div class="evento-card">
+      <span class="evento-card__ico" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M6 13h20l-2 14H8z" fill="#f2a33a"/><path d="M11 13a5 5 0 0 1 10 0" stroke="#c9570a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>
+      <span class="evento-card__txt"><b>Próximamente</b><small>Eventos y promociones</small></span>
     </div>
+
+    <!-- Botón principal del diseño -->
+    <button type="button" class="boton boton--registrar" data-abrir="nuevo">
+      Registrar pedido
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8z"/><path d="M9.5 9.5c.3 2.2 2.3 4.2 4.8 4.8l1.3-1.3-2-1-.9.9c-.9-.4-1.8-1.3-2.2-2.2l.9-.9-1-2z"/></svg>
+    </button>
   </section>
 
-  <!-- ===== PEDIDOS ===== -->
-  <section id="pantalla-pedidos" class="pantalla pantalla--principal" hidden>
-    <header class="encab">
+  <!-- ===== PEDIDOS (lista del diseño) ===== -->
+  <section id="pantalla-pedidos" class="pantalla pantalla--principal pantalla--lista" hidden>
+    <header class="dash-top dash-top--titulo">
+      <button type="button" class="icono-plano" data-ir="perfil" aria-label="Menú y perfil">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
       <h1>Pedidos</h1>
-      <button type="button" class="boton boton--chico" style="width:auto" data-abrir="nuevo">+ Nuevo pedido</button>
+      <button type="button" class="icono-plano icono-plano--oscuro icono-plano--campana" data-abrir="notif" aria-label="Notificaciones">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15zM10 21h4"/></svg>
+        <span class="punto-rojo" id="ped-insignia" hidden></span>
+      </button>
     </header>
-    <span class="ejemplo" id="ped-ejemplo">Datos de ejemplo</span>
-    <div class="pestanas" role="tablist">
-      <button type="button" class="pestana" role="tab" id="tab-hoy" data-dia="hoy" aria-selected="true">Hoy</button>
-      <button type="button" class="pestana" role="tab" id="tab-manana" data-dia="manana" aria-selected="false">Mañana</button>
+
+    <!-- Hoy / Mañana (pequeño, para poder ver los pedidos de mañana) -->
+    <div class="dias-mini" role="tablist">
+      <button type="button" class="dia-tab" role="tab" id="tab-hoy" data-dia="hoy" aria-selected="true">Hoy</button>
+      <button type="button" class="dia-tab" role="tab" id="tab-manana" data-dia="manana" aria-selected="false">Mañana</button>
+      <span class="ejemplo" id="ped-ejemplo">Datos de ejemplo</span>
     </div>
-    <div class="lista" id="ped-lista"></div>
+
+    <!-- Filtros del diseño: Todos / En proceso / Listos -->
+    <div class="filtros" role="tablist">
+      <button type="button" class="filtro" role="tab" data-filtro="todos" aria-selected="true" id="fil-todos">Todos (0)</button>
+      <button type="button" class="filtro" role="tab" data-filtro="proceso" aria-selected="false" id="fil-proceso">En proceso (0)</button>
+      <button type="button" class="filtro" role="tab" data-filtro="listos" aria-selected="false" id="fil-listos">Listos (0)</button>
+    </div>
+
+    <div class="lista-pedidos" id="ped-lista"></div>
+
+    <!-- Botón redondo "+" para registrar un pedido -->
+    <button type="button" class="fab" data-abrir="nuevo" aria-label="Registrar pedido">+</button>
   </section>
 
   <!-- ===== CLIENTES ===== -->
@@ -510,6 +546,7 @@
   <script src="js/config.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/principal.js"></script>
+  <script src="js/inicio.js"></script>
   <script src="js/pedido.js"></script>
   <script src="js/app.js"></script>
 </body>
