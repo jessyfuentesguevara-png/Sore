@@ -4,7 +4,10 @@ const pantallas = {
   login: document.getElementById('pantalla-login'),
   config: document.getElementById('pantalla-config'),
   listo: document.getElementById('pantalla-listo'),
-  inicio: document.getElementById('pantalla-inicio')
+  inicio: document.getElementById('pantalla-inicio'),
+  pedidos: document.getElementById('pantalla-pedidos'),
+  finanzas: document.getElementById('pantalla-finanzas'),
+  mas: document.getElementById('pantalla-mas')
 };
 const aviso = document.getElementById('aviso');
 const formLogin = document.getElementById('form-login');
@@ -22,6 +25,17 @@ function mostrarPantalla(nombre) {
     el.hidden = clave !== nombre;
   }
   window.scrollTo(0, 0); // vuelve arriba al cambiar de pantalla
+
+  // La barra inferior solo se ve en las pantallas principales y marca la actual
+  const barra = document.getElementById('barra-inferior');
+  barra.hidden = !PRINCIPALES.includes(nombre);
+  barra.querySelectorAll('.barra__item').forEach((b) => {
+    if (b.dataset.ir === nombre) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+
+  // Vuelve a dibujar el contenido de la pantalla que se abre
+  if (nombre === 'inicio') renderInicio();
+  if (nombre === 'pedidos') renderPedidos();
 }
 
 // Después de iniciar sesión: si falta la configuración inicial va ahí; si no, al inicio

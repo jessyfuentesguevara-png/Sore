@@ -18,6 +18,8 @@
   <link rel="stylesheet" href="css/styles.css">
   <!-- Estilos de la configuración inicial -->
   <link rel="stylesheet" href="css/config.css">
+  <!-- Estilos de Inicio, Pedidos y la barra inferior -->
+  <link rel="stylesheet" href="css/principal.css">
 </head>
 <body>
 
@@ -228,15 +230,92 @@
     </div>
   </div>
 
-  <!-- ===== Pantalla provisional: se muestra al iniciar sesión hasta que existan Inicio, Pedidos, etc. ===== -->
-  <section id="pantalla-inicio" class="pantalla pantalla--inicio" hidden>
-    <img class="login__mascota" src="img/mascota-asomada.png" alt="">
-    <h1 class="login__titulo">¡Sesión iniciada!</h1>
-    <p class="login__sub">Aquí irá Inicio. Las pantallas de Pedidos, Finanzas y Platillos se agregan en el siguiente paso.</p>
+  <!-- ===== INICIO ===== -->
+  <section id="pantalla-inicio" class="pantalla pantalla--principal" hidden>
+    <header class="encab">
+      <!-- Hamburguesa: por ahora abre "Más" (el menú lateral se hace después) -->
+      <button type="button" class="icono-btn" id="ini-menu" aria-label="Menú">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div style="flex:1">
+        <p class="encab__saludo" id="ini-saludo">Hola</p>
+        <p class="encab__sub">Aquí está tu resumen de hoy</p>
+      </div>
+      <!-- Campana: alertas dentro de la app (sin notificaciones push) -->
+      <button type="button" class="icono-btn" id="ini-campana" aria-label="Alertas">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15zM10 21h4"/></svg>
+        <span class="insignia" id="ini-insignia" hidden>0</span>
+      </button>
+    </header>
+    <span class="ejemplo">Datos de ejemplo</span>
+
+    <div class="acciones">
+      <button type="button" class="boton boton--chico" data-pendiente="Nuevo pedido">+ Nuevo pedido</button>
+      <button type="button" class="boton boton--chico boton--sec" data-pendiente="Gasto">+ Gasto</button>
+    </div>
+
+    <!-- Ventas de hoy separadas en cobrado y por cobrar -->
+    <div class="tarjeta">
+      <h2>Ventas de hoy</h2>
+      <div class="ventas">
+        <div><div class="ventas__cifra ventas__cifra--ok" id="ini-cobrado">$0</div><div class="ventas__nombre">Cobrado</div></div>
+        <div><div class="ventas__cifra ventas__cifra--pend" id="ini-porcobrar">$0</div><div class="ventas__nombre">Por cobrar</div></div>
+      </div>
+    </div>
+
+    <!-- Próximas entregas, ordenadas por hora -->
+    <div class="tarjeta" id="ini-entregas">
+      <div class="fila-titulo"><h2>Próximas entregas</h2><button type="button" class="enlace-chico" data-ir="pedidos">Ver todos</button></div>
+      <div id="ini-lista"></div>
+    </div>
+  </section>
+
+  <!-- ===== PEDIDOS ===== -->
+  <section id="pantalla-pedidos" class="pantalla pantalla--principal" hidden>
+    <header class="encab">
+      <h1>Pedidos</h1>
+      <button type="button" class="boton boton--chico" style="width:auto" data-pendiente="Nuevo pedido">+ Nuevo pedido</button>
+    </header>
+    <span class="ejemplo">Datos de ejemplo</span>
+    <div class="pestanas" role="tablist">
+      <button type="button" class="pestana" role="tab" id="tab-hoy" data-dia="hoy" aria-selected="true">Hoy</button>
+      <button type="button" class="pestana" role="tab" id="tab-manana" data-dia="manana" aria-selected="false">Mañana</button>
+    </div>
+    <div class="lista" id="ped-lista"></div>
+  </section>
+
+  <!-- ===== FINANZAS (provisional: aún sin construir) ===== -->
+  <section id="pantalla-finanzas" class="pantalla pantalla--principal provisional" hidden>
+    <header class="encab"><h1>Finanzas</h1></header>
+    <img src="img/mascota-asomada.png" alt="">
+    <p>Esta pantalla se construye en el siguiente paso.</p>
+  </section>
+
+  <!-- ===== MÁS (provisional: aquí irá el menú lateral) ===== -->
+  <section id="pantalla-mas" class="pantalla pantalla--principal provisional" hidden>
+    <header class="encab"><h1>Más</h1></header>
+    <img src="img/mascota-asomada.png" alt="">
+    <p>Aquí irá el menú (Platillos, Clientes, Gastos, Configuración...).</p>
     <button type="button" id="btn-salir" class="boton">Cerrar sesión</button>
     <!-- Solo para pruebas: borra la configuración guardada y la vuelve a mostrar -->
     <button type="button" id="btn-repetir-config" class="enlace">Volver a ver la configuración inicial</button>
   </section>
+
+  <!-- Barra inferior: la misma en todas las pantallas principales -->
+  <nav id="barra-inferior" class="barra" aria-label="Principal" hidden>
+    <button type="button" class="barra__item" data-ir="inicio">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg><span>Inicio</span>
+    </button>
+    <button type="button" class="barra__item" data-ir="pedidos">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></svg><span>Pedidos</span>
+    </button>
+    <button type="button" class="barra__item" data-ir="finanzas">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V12M12 20V5M19 20v-5"/></svg><span>Finanzas</span>
+    </button>
+    <button type="button" class="barra__item" data-ir="mas">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span>Más</span>
+    </button>
+  </nav>
 
   <!-- Mensaje flotante temporal -->
   <div id="aviso" class="aviso" role="status" hidden></div>
@@ -244,6 +323,8 @@
   <!-- Lógica: primero la sesión, luego la app -->
   <script src="js/auth.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/datos.js"></script>
+  <script src="js/principal.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

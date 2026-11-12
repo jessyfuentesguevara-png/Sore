@@ -1,0 +1,98 @@
+/* ===== Pantallas principales: Inicio, Pedidos, Finanzas y Más, con barra inferior ===== */
+
+/* Sin manchas decorativas y con espacio abajo para la barra */
+.pantalla--principal { align-items: stretch; padding: max(16px, env(safe-area-inset-top)) 16px 96px; gap: 14px; }
+.pantalla--principal::before, .pantalla--principal::after { display: none; }
+
+/* ----- Barra inferior ----- */
+.barra {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 430px; z-index: 5;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  background: var(--blanco); border-top: 1px solid var(--borde);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.barra__item {
+  min-height: 62px; border: 0; background: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  font: inherit; font-size: .8rem; color: #7a6657;
+}
+.barra__item svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* Pestaña activa en naranja y en negrita */
+.barra__item[aria-current="page"] { color: var(--naranja-osc); font-weight: 800; }
+
+/* ----- Encabezados ----- */
+.encab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.encab h1 { font-size: 1.5rem; color: var(--cafe); font-weight: 800; }
+.encab__saludo { font-size: 1.35rem; font-weight: 800; color: var(--cafe); }
+.encab__sub { font-size: .9rem; }
+.icono-btn { position: relative; width: 44px; height: 44px; border: 0; border-radius: 12px; background: var(--blanco); cursor: pointer; display: grid; place-items: center; }
+.icono-btn svg { width: 24px; height: 24px; fill: none; stroke: var(--cafe); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.insignia { position: absolute; top: 4px; right: 4px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--naranja); color: #fff; font-size: .7rem; font-weight: 800; display: grid; place-items: center; }
+
+/* Etiqueta que avisa que son datos de ejemplo */
+.ejemplo { align-self: flex-start; padding: 3px 10px; border-radius: 10px; background: #ece3f7; color: #4b3a6b; font-size: .75rem; font-weight: 700; }
+
+/* ----- Botones de acción ----- */
+.acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.boton--chico { min-height: 46px; font-size: 1rem; border-radius: 23px; width: auto; padding: 0 16px; }
+
+/* ----- Tarjetas ----- */
+.tarjeta { background: var(--blanco); border: 1px solid var(--borde); border-radius: 16px; padding: 14px; box-shadow: 0 2px 6px rgba(120, 70, 20, .06); }
+.tarjeta h2 { font-size: 1.05rem; color: var(--cafe); margin-bottom: 8px; }
+.ventas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ventas__cifra { font-size: 1.6rem; font-weight: 800; }
+.ventas__cifra--ok { color: #2f6b2a; }
+.ventas__cifra--pend { color: #a85a00; }
+.ventas__nombre { font-size: .85rem; }
+
+.fila-titulo { display: flex; justify-content: space-between; align-items: baseline; }
+.enlace-chico { border: 0; background: none; font: inherit; font-size: .9rem; color: var(--naranja-osc); text-decoration: underline; cursor: pointer; padding: 6px; }
+
+/* Entrega próxima en Inicio */
+.entrega { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--borde); }
+.entrega:first-of-type { border-top: 0; }
+.entrega__hora { min-width: 92px; white-space: nowrap; font-weight: 800; font-size: 1rem; color: var(--cafe); }
+.entrega__datos { flex: 1; min-width: 0; }
+.entrega__cliente { font-weight: 800; }
+.entrega__plato { font-size: .85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ----- Etiquetas de estado y de pago (grandes y de buen contraste) ----- */
+.etiqueta { display: inline-block; padding: 6px 12px; border-radius: 14px; font-size: .9rem; font-weight: 800; white-space: nowrap; }
+.etiqueta--pendiente  { background: #ffe9a8; color: #5a3d00; }
+.etiqueta--preparando { background: #ffc58a; color: #5a2a00; }
+.etiqueta--listo      { background: #c8e6a0; color: #1f4a12; }
+.etiqueta--entregado  { background: #dcd6cf; color: #3d342c; }
+.etiqueta--pagado     { background: #2f6b2a; color: #fff; }
+.etiqueta--cobrar     { background: #b3261e; color: #fff; }
+
+/* ----- Pestañas Hoy / Mañana ----- */
+.pestanas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pestana { min-height: 44px; border: 1.5px solid var(--borde); border-radius: 22px; background: var(--blanco); font: inherit; font-weight: 700; cursor: pointer; }
+.pestana[aria-selected="true"] { background: var(--naranja); border-color: var(--naranja); color: #fff; }
+
+/* ----- Tarjeta de pedido ----- */
+.pedido { display: flex; flex-direction: column; gap: 8px; text-align: left; width: 100%; font: inherit; color: inherit; cursor: pointer; }
+.pedido__arriba { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.pedido__hora { font-size: 1.35rem; font-weight: 800; color: var(--naranja-osc); }   /* hora muy visible */
+.pedido__num { font-size: .8rem; color: #7a6657; }                                  /* número pequeño */
+.pedido__cliente { font-size: 1.25rem; font-weight: 800; color: var(--cafe); }      /* nombre grande */
+.pedido__items { font-size: .9rem; display: flex; flex-direction: column; gap: 2px; }
+.pedido__etiquetas { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pedido__total { margin-left: auto; font-weight: 800; font-size: 1.1rem; }
+.pedido__choque { padding: 8px 10px; border-radius: 10px; background: #fde4e1; color: #7a1510; font-size: .85rem; font-weight: 700; }
+.pedido__botones { display: flex; gap: 8px; flex-wrap: wrap; }
+.mini { min-height: 40px; padding: 0 14px; border: 1.5px solid var(--naranja); border-radius: 20px; background: transparent; color: var(--naranja-osc); font: inherit; font-size: .9rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; cursor: pointer; }
+
+/* Lista de pedidos */
+.lista { display: flex; flex-direction: column; gap: 12px; }
+
+/* ----- Estado vacío (mascota con la olla) ----- */
+.vacio { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 8px; }
+.vacio img { width: 150px; height: auto; }
+.vacio h2 { color: var(--cafe); font-size: 1.2rem; }
+.vacio .boton { width: auto; padding: 0 28px; }
+
+/* ----- Pantallas provisionales (Finanzas y Más) ----- */
+.provisional { text-align: center; align-items: center; }
+.provisional img { width: 160px; height: auto; }
