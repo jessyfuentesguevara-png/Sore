@@ -1,8 +1,17 @@
-// Nombre de la versión de la caché; al cambiarlo, el navegador renueva los archivos guardados
-const VERSION = 'sore-v2';
+// Nombre de la versión de la caché; al cambiarlo, el navegador renueva los archivos guardados.
+// Se subió a v3 porque cambiaron las pantallas y se agregaron imágenes y auth.js.
+const VERSION = 'sore-v4';
 
-// Archivos que se guardan para que la app abra sin internet
-const ARCHIVOS = ['./', 'index.html', 'css/styles.css', 'js/app.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
+// Archivos guardados para abrir sin internet.
+// Las imágenes de la mascota solo se agregan cuando existe la pantalla que las usa
+// (por ahora: splash y asomada para login).
+const ARCHIVOS = [
+  './', 'index.html', 'css/styles.css', 'css/config.css',
+  'js/app.js', 'js/auth.js', 'js/config.js',
+  'manifest.webmanifest',
+  'icons/icon-192.png', 'icons/icon-512.png',
+  'img/mascota-splash.png', 'img/mascota-asomada.png', 'img/mascota-bandera.png'
+];
 
 // Al instalarse: guarda en caché los archivos básicos
 self.addEventListener('install', (e) => {
@@ -10,7 +19,7 @@ self.addEventListener('install', (e) => {
   self.skipWaiting(); // activa esta versión sin esperar
 });
 
-// Al activarse: borra las cachés de versiones anteriores (por ejemplo sore-v1)
+// Al activarse: borra las cachés de versiones anteriores (sore-v1, sore-v2)
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((nombres) =>

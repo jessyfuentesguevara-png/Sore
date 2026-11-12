@@ -1,81 +1,157 @@
-/* ===== Variables de color: se cambian aquí y afectan toda la app ===== */
+/* ===== Variables: colores y tipografía PROVISIONALES (se cambian solo aquí) =====
+   Nota: no se sacaron de las capturas; hay que confirmarlos con Jessica. */
 :root {
-  --verde: #2f6f4f;   /* color principal */
-  --fondo: #f6f7f5;   /* fondo general */
-  --texto: #1d2420;   /* color del texto */
+  --naranja: #f27a1a;        /* botones y acentos */
+  --naranja-osc: #dd650a;    /* botón al presionar */
+  --naranja-claro: #ffb36b;  /* manchas decorativas */
+  --crema: #fff3e6;          /* fondo general */
+  --blanco: #fffaf5;         /* fondo de los campos */
+  --verde: #a9c94c;          /* manchas verdes decorativas */
+  --cafe: #4b2a14;           /* títulos */
+  --texto: #3a2a1f;          /* texto normal */
+  --borde: #f1dcc7;          /* borde de los campos */
+  --error: #c0392b;          /* mensajes de error */
+  --fuente: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
-/* Hace que el padding no agrande las cajas y quita márgenes por defecto */
+/* El padding no agranda las cajas y se quitan los márgenes por defecto */
 * { box-sizing: border-box; margin: 0; }
 
 /* Estilo base de toda la página */
 body {
-  font-family: system-ui, sans-serif;
-  background: var(--fondo);
+  font-family: var(--fuente);
+  background: var(--crema);
   color: var(--texto);
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
-/* ===== Pantalla de login ===== */
-.login {
-  max-width: 360px;           /* ancho máximo de la tarjeta */
-  margin: 0 auto;             /* centrada horizontalmente */
-  padding: 64px 20px;         /* aire alrededor */
+/* El atributo hidden siempre debe ocultar, aunque la regla tenga display */
+[hidden] { display: none !important; }
+
+/* ===== Contenedor de cada pantalla (ancho de celular, centrado) ===== */
+.pantalla {
+  position: relative;            /* para ubicar las manchas decorativas */
+  overflow: hidden;              /* las manchas no se salen */
+  max-width: 430px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
   display: flex;
-  flex-direction: column;     /* elementos uno debajo de otro */
-  gap: 16px;                  /* separación entre elementos */
+  flex-direction: column;
+  align-items: center;
+  background: var(--crema);
 }
 
-/* Título "Sore" */
-.login__titulo { text-align: center; color: var(--verde); }
-
-/* Formulario: etiquetas y campos apilados */
-.login__form { display: flex; flex-direction: column; gap: 8px; }
-
-/* Campos de texto */
-.login__form input {
-  padding: 10px;
-  border: 1px solid #c9d1cb;
-  border-radius: 8px;
-  font-size: 1rem;
+/* Mancha naranja arriba a la izquierda (decoración) */
+.pantalla::before {
+  content: "";
+  position: absolute;
+  top: -90px; left: -80px;
+  width: 260px; height: 220px;
+  background: var(--naranja-claro);
+  opacity: .55;
+  border-radius: 50% 60% 70% 40%;
+  z-index: 0;
 }
-
-/* Botón principal */
-.boton {
-  margin-top: 8px;
-  padding: 12px;
-  border: 0;
-  border-radius: 8px;
+/* Mancha verde abajo a la derecha (decoración) */
+.pantalla::after {
+  content: "";
+  position: absolute;
+  bottom: -110px; right: -90px;
+  width: 340px; height: 240px;
   background: var(--verde);
-  color: #fff;
-  font-size: 1rem;
+  opacity: .55;
+  border-radius: 60% 40% 30% 70%;
+  z-index: 0;
+}
+/* Todo el contenido va por encima de las manchas */
+.pantalla > * { position: relative; z-index: 1; }
+
+/* ===== Splash ===== */
+.pantalla--splash { justify-content: center; text-align: center; gap: 24px; }
+.splash__mascota { width: min(72vw, 300px); height: auto; }
+.splash__lema { font-size: 1.15rem; font-weight: 700; line-height: 1.4; color: var(--cafe); }
+.corazon { color: var(--naranja); }                /* corazón naranja del lema */
+.puntos { display: flex; gap: 8px; margin-top: 12px; }
+.punto { width: 9px; height: 9px; border-radius: 50%; background: var(--naranja-claro); }
+.punto--activo { background: var(--naranja); }
+
+/* ===== Login (y pantalla provisional de inicio) ===== */
+.pantalla--login, .pantalla--inicio { padding-top: max(32px, env(safe-area-inset-top)); }
+.login__mascota { width: min(52vw, 210px); height: auto; margin-bottom: 4px; }
+.login__titulo { font-size: 1.9rem; line-height: 1.15; text-align: center; color: var(--cafe); font-weight: 800; }
+.login__sub { margin: 10px 0 24px; text-align: center; font-size: 1rem; max-width: 300px; }
+
+/* Formulario: ocupa todo el ancho disponible */
+.login__form { width: 100%; display: flex; flex-direction: column; gap: 14px; }
+
+/* Cada campo: caja blanca con ícono a la izquierda */
+.campo {
+  display: flex; align-items: center; gap: 10px;
+  min-height: 52px; padding: 0 14px;
+  background: var(--blanco);
+  border: 1.5px solid var(--borde);
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(120, 70, 20, .06);
+}
+/* Resalta el campo cuando se está escribiendo en él */
+.campo:focus-within { border-color: var(--naranja); }
+.campo--error { border-color: var(--error); }
+
+/* Íconos de línea (SVG) */
+.campo__icono, .campo__ojo svg {
+  width: 22px; height: 22px; flex: none;
+  fill: none; stroke: var(--cafe); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+/* El input se mimetiza con la caja; 16px evita el zoom automático en iPhone */
+.campo input {
+  flex: 1; min-width: 0; border: 0; outline: 0; background: transparent;
+  font: inherit; font-size: 16px; color: var(--texto);
+}
+.campo input::placeholder { color: #8a7766; }
+.campo__ojo { border: 0; background: none; padding: 6px; cursor: pointer; border-radius: 8px; }
+
+/* Mensaje de error */
+.login__error { color: var(--error); font-size: .95rem; font-weight: 700; text-align: center; }
+
+/* Botón principal naranja */
+.boton {
+  min-height: 52px; width: 100%;
+  border: 0; border-radius: 26px;
+  background: var(--naranja); color: #fff;
+  font: inherit; font-size: 1.1rem; font-weight: 800;
+  box-shadow: 0 4px 10px rgba(242, 122, 26, .35);
   cursor: pointer;
+}
+.boton:active { background: var(--naranja-osc); }
+/* Estado desactivado (mientras se envía o no hay datos válidos) */
+.boton:disabled { opacity: .6; cursor: default; }
+
+/* Único enlace del login */
+.enlace {
+  margin-top: 18px; padding: 8px;
+  border: 0; background: none;
+  font: inherit; font-size: .95rem; color: var(--cafe);
+  text-decoration: underline; cursor: pointer;
 }
 
-/* Botón con apariencia de enlace (¿Olvidaste tu contraseña?) */
-.enlace {
-  background: none;
-  border: 0;
-  color: var(--verde);
-  text-decoration: underline;
-  cursor: pointer;
-  font-size: 0.95rem;
-}
+/* La pantalla provisional separa el botón de salir */
+.pantalla--inicio .boton { margin-top: 8px; }
 
 /* ===== Aviso flotante ===== */
 .aviso {
-  position: fixed;                 /* queda fijo sobre la pantalla */
-  bottom: 24px;                    /* separado del borde inferior */
+  position: fixed;
+  bottom: 24px;
   left: 50%;
-  transform: translateX(-50%);     /* centrado horizontalmente */
+  transform: translateX(-50%);
   padding: 12px 16px;
-  border-radius: 8px;
-  background: var(--texto);
+  border-radius: 12px;
+  background: var(--cafe);
   color: #fff;
-  z-index: 10;                     /* por encima del resto */
-  width: max-content;              /* se ajusta al tamaño del texto */
+  z-index: 10;
+  width: max-content;              /* se ajusta al texto */
   max-width: min(90vw, 390px);     /* nunca más de 90% de pantalla ni 390px */
+  text-align: center;
 }
-
-/* El atributo hidden debe ganarle al display de las reglas anteriores */
-.aviso[hidden] { display: none; }

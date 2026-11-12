@@ -2,50 +2,248 @@
 <!-- Idioma de la página: español -->
 <html lang="es">
 <head>
-  <!-- Codificación de caracteres para que se vean bien los acentos y la ñ -->
+  <!-- Codificación para que se vean bien acentos y la ñ -->
   <meta charset="UTF-8">
-  <!-- Hace que la página se adapte al ancho del celular -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Título que aparece en la pestaña del navegador -->
+  <!-- Adapta la página al ancho del celular; viewport-fit=cover usa toda la pantalla -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Sore</title>
-  <!-- Archivo que describe la app para poder instalarla (PWA) -->
+  <!-- Describe la app para poder instalarla (PWA) -->
   <link rel="manifest" href="manifest.webmanifest">
-  <!-- Color de la barra del navegador en el celular -->
-  <meta name="theme-color" content="#2f6f4f">
-  <!-- Icono de la pestaña del navegador -->
+  <!-- Color de la barra superior del navegador en el celular (provisional) -->
+  <meta name="theme-color" content="#fff3e6">
+  <!-- Iconos de pestaña y de iPhone -->
   <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
-  <!-- Icono que usa el iPhone al "Agregar a pantalla de inicio" -->
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <!-- Hoja de estilos de la app -->
+  <!-- Hoja de estilos -->
   <link rel="stylesheet" href="css/styles.css">
+  <!-- Estilos de la configuración inicial -->
+  <link rel="stylesheet" href="css/config.css">
 </head>
 <body>
 
-  <!-- Pantalla de inicio de sesión -->
-  <section id="pantalla-login" class="login">
-    <h1 class="login__titulo">Sore</h1>
+  <!-- ===== Pantalla 1: Splash (se ve ~2 segundos al abrir la app) ===== -->
+  <section id="pantalla-splash" class="pantalla pantalla--splash" aria-label="Sore">
+    <!-- Mascota con el rótulo "Sore" -->
+    <img class="splash__mascota" src="img/mascota-splash.png" alt="Sore: cebollita chef guiñando el ojo">
+    <!-- Lema de la app; el corazón es naranja -->
+    <p class="splash__lema">Tu aliado en la cocina<br>y en tus finanzas <span class="corazon" aria-hidden="true">&#10084;</span></p>
+    <!-- Puntitos decorativos (el primero activo) -->
+    <div class="puntos" aria-hidden="true"><i class="punto punto--activo"></i><i class="punto"></i><i class="punto"></i></div>
+  </section>
 
-    <!-- Formulario de acceso: correo y contraseña -->
-    <form id="form-login" class="login__form">
-      <label for="correo">Correo</label>
-      <input id="correo" type="email" required autocomplete="username">
+  <!-- ===== Pantalla 2: Login ===== -->
+  <section id="pantalla-login" class="pantalla pantalla--login" hidden>
+    <!-- Mascota asomada arriba -->
+    <img class="login__mascota" src="img/mascota-asomada.png" alt="">
 
-      <label for="clave">Contraseña</label>
-      <input id="clave" type="password" required autocomplete="current-password">
+    <h1 class="login__titulo">¡Bienvenido de nuevo!</h1>
+    <p class="login__sub">Inicia sesión para administrar tu negocio.</p>
 
-      <!-- Botón que envía el formulario -->
-      <button type="submit" class="boton">Entrar</button>
+    <!-- novalidate: las validaciones las hacemos nosotros para mostrar mensajes propios -->
+    <form id="form-login" class="login__form" novalidate>
+      <!-- Campo de correo -->
+      <label class="campo" for="correo">
+        <!-- Ícono de sobre -->
+        <svg class="campo__icono" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        <input id="correo" name="correo" type="email" placeholder="Correo electrónico" autocomplete="username" inputmode="email" required>
+      </label>
+
+      <!-- Campo de contraseña con botón de ojo para verla u ocultarla -->
+      <label class="campo" for="clave">
+        <!-- Ícono de candado -->
+        <svg class="campo__icono" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <input id="clave" name="clave" type="password" placeholder="Contraseña" autocomplete="current-password" required>
+        <button type="button" id="btn-ver-clave" class="campo__ojo" aria-label="Mostrar contraseña">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </label>
+
+      <!-- Mensaje de error (vacío = no se ve) -->
+      <p id="login-error" class="login__error" role="alert" hidden></p>
+
+      <!-- Botón principal -->
+      <button type="submit" id="btn-entrar" class="boton">Iniciar sesión</button>
     </form>
 
-    <!-- Único enlace que queda en el login: recuperar la contraseña.
-         (Se eliminó el bloque .login__alternativas con "Primera vez" y "Código de invitación") -->
+    <!-- Único enlace del login según el diseño vigente -->
     <button type="button" id="btn-olvide" class="enlace">¿Olvidaste tu contraseña?</button>
   </section>
 
-  <!-- Mensaje flotante que se muestra unos segundos y desaparece -->
+  <!-- ===== Configuración inicial (3 pasos) ===== -->
+  <section id="pantalla-config" class="pantalla pantalla--config" hidden>
+    <!-- Cabecera: flecha de regreso (oculta en el paso 1), "n de 3" y barra de progreso -->
+    <header class="config__cabecera">
+      <button type="button" id="cfg-atras" class="config__atras" aria-label="Paso anterior">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>
+      </button>
+      <span id="cfg-contador">1 de 3</span>
+      <span></span>
+    </header>
+    <div class="progreso" aria-hidden="true"><div id="cfg-relleno" class="progreso__relleno"></div></div>
+
+    <!-- Paso 1: solo foto (opcional) y nombre -->
+    <form id="paso-1" class="paso" novalidate>
+      <h1 class="config__titulo">Tu perfil</h1>
+      <p class="config__sub">Cuéntanos un poco sobre ti.</p>
+      <label class="foto">
+        <span class="foto__marco">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+          <img id="foto-perfil-vista" alt="" hidden>
+        </span>
+        Foto de perfil (opcional)
+        <input type="file" id="foto-perfil" accept="image/*">
+      </label>
+      <div class="grupo">
+        <label class="campo" for="cfg-nombre">
+          <svg class="campo__icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+          <input id="cfg-nombre" type="text" placeholder="Tu nombre *" autocomplete="name">
+        </label>
+        <p class="campo__msg" id="err-nombre" hidden></p>
+      </div>
+      <button type="submit" class="boton">Siguiente ›</button>
+      <img class="config__mascota" src="img/mascota-asomada.png" alt="">
+    </form>
+
+    <!-- Paso 2: datos del negocio -->
+    <form id="paso-2" class="paso" novalidate hidden>
+      <h1 class="config__titulo">Tu negocio</h1>
+      <p class="config__sub">Danos información de tu negocio.</p>
+      <label class="foto">
+        <span class="foto__marco foto__marco--logo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+          <img id="logo-vista" alt="" hidden>
+        </span>
+        Logo (opcional)
+        <input type="file" id="logo-negocio" accept="image/*">
+      </label>
+      <div class="grupo">
+        <label class="campo" for="cfg-negocio">
+          <svg class="campo__icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16l-1-5H5zM5 10v9h14v-9"/></svg>
+          <input id="cfg-negocio" type="text" placeholder="Nombre del negocio *" autocomplete="organization">
+        </label>
+        <p class="campo__msg" id="err-negocio" hidden></p>
+      </div>
+      <div class="grupo">
+        <label class="campo" for="cfg-tipo">
+          <svg class="campo__icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16l-1-5H5zM5 10v9h14v-9"/></svg>
+          <select id="cfg-tipo">
+            <option value="">Tipo de negocio *</option>
+            <option>Cocina económica</option>
+            <option>Comida para llevar</option>
+            <option>Repostería</option>
+            <option>Panadería</option>
+            <option>Taquería</option>
+            <option>Otro</option>
+          </select>
+        </label>
+        <p class="campo__msg" id="err-tipo" hidden></p>
+      </div>
+      <div class="grupo">
+        <label class="campo" for="cfg-whatsapp">
+          <svg class="campo__icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l1.3-4A7.5 7.5 0 1 1 9 17.7z"/></svg>
+          <input id="cfg-whatsapp" type="tel" inputmode="tel" placeholder="WhatsApp del negocio (opcional)" autocomplete="tel">
+        </label>
+        <p class="campo__msg" id="err-whatsapp" hidden></p>
+      </div>
+      <label class="campo" for="cfg-ciudad">
+        <svg class="campo__icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        <input id="cfg-ciudad" type="text" placeholder="Ciudad o zona (opcional)">
+      </label>
+      <button type="submit" class="boton">Siguiente ›</button>
+      <img class="config__mascota" src="img/mascota-asomada.png" alt="">
+    </form>
+
+    <!-- Paso 3: cómo trabajan -->
+    <form id="paso-3" class="paso" novalidate hidden>
+      <h1 class="config__titulo">Cómo trabajan</h1>
+      <p class="config__sub">Configura la forma en que operas.</p>
+
+      <div class="grupo">
+        <span class="grupo__etiqueta">Días y horario de servicio <span class="req">*</span></span>
+        <!-- Abre la hoja inferior para elegir días y horas -->
+        <button type="button" id="btn-horario" class="campo campo--boton">
+          <span id="horario-texto">Selecciona días y horario</span><span aria-hidden="true">›</span>
+        </button>
+        <p class="campo__msg" id="err-horario" hidden></p>
+      </div>
+
+      <div class="grupo">
+        <span class="grupo__etiqueta">¿Cómo entregas? <span class="req">*</span></span>
+        <div class="opciones" id="opc-entrega">
+          <button type="button" class="opcion" aria-pressed="false" data-valor="domicilio"><span class="opcion__emoji" aria-hidden="true">🛵</span>A domicilio</button>
+          <button type="button" class="opcion" aria-pressed="false" data-valor="recoger"><span class="opcion__emoji" aria-hidden="true">🛍️</span>Recoger</button>
+          <button type="button" class="opcion" aria-pressed="false" data-valor="local"><span class="opcion__emoji" aria-hidden="true">🍽️</span>En el local</button>
+        </div>
+        <p class="campo__msg" id="err-entrega" hidden></p>
+      </div>
+
+      <div class="grupo">
+        <span class="grupo__etiqueta">Formas de pago <span class="req">*</span></span>
+        <div class="opciones" id="opc-pago">
+          <button type="button" class="opcion" aria-pressed="false" data-valor="efectivo"><span class="opcion__emoji" aria-hidden="true">💵</span>Efectivo</button>
+          <button type="button" class="opcion" aria-pressed="false" data-valor="tarjeta"><span class="opcion__emoji" aria-hidden="true">💳</span>Tarjeta</button>
+          <button type="button" class="opcion" aria-pressed="false" data-valor="transferencia"><span class="opcion__emoji" aria-hidden="true">🏦</span>Transferencia</button>
+        </div>
+        <p class="campo__msg" id="err-pago" hidden></p>
+      </div>
+
+      <div class="fila-interruptor">
+        <span>¿Hacen eventos?</span>
+        <button type="button" id="sw-eventos" class="interruptor" role="switch" aria-checked="false" aria-label="¿Hacen eventos?"></button>
+      </div>
+
+      <button type="submit" id="btn-finalizar" class="boton">Finalizar</button>
+    </form>
+  </section>
+
+  <!-- ===== ¡Todo listo! ===== -->
+  <section id="pantalla-listo" class="pantalla pantalla--listo" hidden>
+    <img class="listo__mascota" src="img/mascota-bandera.png" alt="">
+    <h1 class="login__titulo">¡Todo listo!</h1>
+    <p class="login__sub">Tu negocio ya está configurado y puedes comenzar a usar Sore.</p>
+    <button type="button" id="btn-ir-negocio" class="boton">Ir a mi negocio ›</button>
+    <!-- Botón secundario acordado con Jessica -->
+    <button type="button" id="btn-invitar" class="boton boton--sec">Invitar a mi socio/a</button>
+  </section>
+
+  <!-- Hoja inferior: días y horario (PROVISIONAL, el diseño aún no existe) -->
+  <div id="hoja-horario" class="hoja" hidden>
+    <div class="hoja__caja" role="dialog" aria-modal="true" aria-labelledby="hoja-titulo">
+      <h2 id="hoja-titulo">Días y horario de servicio</h2>
+      <div class="dias" id="dias">
+        <button type="button" class="dia" aria-pressed="false" data-dia="Lun">Lun</button>
+        <button type="button" class="dia" aria-pressed="false" data-dia="Mar">Mar</button>
+        <button type="button" class="dia" aria-pressed="false" data-dia="Mié">Mié</button>
+        <button type="button" class="dia" aria-pressed="false" data-dia="Jue">Jue</button>
+        <button type="button" class="dia" aria-pressed="false" data-dia="Vie">Vie</button>
+        <button type="button" class="dia" aria-pressed="false" data-dia="Sáb">Sáb</button>
+        <button type="button" class="dia" aria-pressed="false" data-dia="Dom">Dom</button>
+      </div>
+      <div class="horas">
+        <label>Desde<input type="time" id="hora-desde" value="08:00"></label>
+        <label>Hasta<input type="time" id="hora-hasta" value="16:00"></label>
+      </div>
+      <p class="campo__msg" id="err-hoja" hidden></p>
+      <button type="button" id="btn-hoja-ok" class="boton">Guardar horario</button>
+    </div>
+  </div>
+
+  <!-- ===== Pantalla provisional: se muestra al iniciar sesión hasta que existan Inicio, Pedidos, etc. ===== -->
+  <section id="pantalla-inicio" class="pantalla pantalla--inicio" hidden>
+    <img class="login__mascota" src="img/mascota-asomada.png" alt="">
+    <h1 class="login__titulo">¡Sesión iniciada!</h1>
+    <p class="login__sub">Aquí irá Inicio. Las pantallas de Pedidos, Finanzas y Platillos se agregan en el siguiente paso.</p>
+    <button type="button" id="btn-salir" class="boton">Cerrar sesión</button>
+    <!-- Solo para pruebas: borra la configuración guardada y la vuelve a mostrar -->
+    <button type="button" id="btn-repetir-config" class="enlace">Volver a ver la configuración inicial</button>
+  </section>
+
+  <!-- Mensaje flotante temporal -->
   <div id="aviso" class="aviso" role="status" hidden></div>
 
-  <!-- Lógica de la app -->
+  <!-- Lógica: primero la sesión, luego la app -->
+  <script src="js/auth.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

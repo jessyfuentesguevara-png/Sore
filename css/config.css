@@ -1,0 +1,86 @@
+/* ===== Estilos de la configuración inicial (3 pasos) y de "¡Todo listo!" ===== */
+
+/* La configuración va alineada arriba y ocupa todo el ancho */
+.pantalla--config { align-items: stretch; padding-top: max(16px, env(safe-area-inset-top)); }
+
+/* Cabecera: [flecha] [n de 3] [espacio] */
+.config__cabecera { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; text-align: center; font-weight: 700; }
+.config__atras {
+  width: 44px; height: 44px; border: 0; background: none; cursor: pointer;
+  display: grid; place-items: center;
+}
+.config__atras svg { width: 26px; height: 26px; fill: none; stroke: var(--cafe); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+/* En el paso 1 no hay flecha, pero se conserva el espacio para que el texto quede centrado */
+.config__atras[hidden] { display: block !important; visibility: hidden; }
+
+/* Barra de progreso: la parte naranja crece con cada paso */
+.progreso { height: 8px; margin: 4px 8px 20px; background: #f5dfc9; border-radius: 4px; overflow: hidden; }
+.progreso__relleno { height: 100%; width: 33.3%; background: var(--naranja); border-radius: 4px; transition: width .25s; }
+
+.config__titulo { text-align: center; font-size: 1.6rem; font-weight: 800; color: var(--cafe); }
+.config__sub { text-align: center; margin: 6px 0 18px; }
+
+/* Cada paso es un formulario en columna */
+.paso { display: flex; flex-direction: column; gap: 14px; }
+
+/* Foto de perfil (círculo) y logo (cuadro punteado): botones que abren la galería */
+.foto { align-self: center; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: .85rem; cursor: pointer; }
+.foto__marco {
+  position: relative; width: 112px; height: 112px; border-radius: 50%;
+  background: #f3c9a4; display: grid; place-items: center; overflow: hidden;
+}
+.foto__marco--logo { border-radius: 16px; background: var(--blanco); border: 2px dashed var(--naranja-claro); }
+.foto__marco svg { width: 56px; height: 56px; fill: none; stroke: #8a5a3a; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.foto__marco img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.foto input { position: absolute; width: 1px; height: 1px; opacity: 0; } /* el input real se oculta */
+
+/* Campos con mensaje de error debajo */
+.grupo { display: flex; flex-direction: column; gap: 6px; }
+.grupo__etiqueta { font-weight: 800; color: var(--cafe); }
+.campo__msg { color: var(--error); font-size: .85rem; font-weight: 700; padding-left: 4px; }
+.campo select { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 16px; color: var(--texto); }
+.req { color: var(--naranja); }                       /* asterisco de obligatorio */
+
+/* Botón que abre el selector de días y horario */
+.campo--boton { width: 100%; font: inherit; font-size: 16px; text-align: left; cursor: pointer; justify-content: space-between; }
+
+/* Opciones tipo tarjeta (entrega y pago): se pueden elegir varias */
+.opciones { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.opcion {
+  min-height: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  background: var(--blanco); border: 1.5px solid var(--borde); border-radius: 14px;
+  font: inherit; font-size: .85rem; color: var(--texto); cursor: pointer;
+}
+.opcion__emoji { font-size: 1.6rem; line-height: 1; }
+/* Estado seleccionado: borde y fondo naranja suave */
+.opcion[aria-pressed="true"] { border-color: var(--naranja); background: #ffe6cf; font-weight: 800; }
+.opciones--error .opcion { border-color: var(--error); }
+
+/* Interruptor "¿Hacen eventos?" */
+.fila-interruptor { display: flex; justify-content: space-between; align-items: center; }
+.interruptor { width: 52px; height: 30px; border: 0; border-radius: 15px; background: #d8cbbd; position: relative; cursor: pointer; }
+.interruptor::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: left .2s; }
+.interruptor[aria-checked="true"] { background: var(--verde); }
+.interruptor[aria-checked="true"]::after { left: 25px; }
+
+/* Imagen de la mascota al pie de los pasos 1 y 2 */
+.config__mascota { width: 150px; align-self: center; margin-top: 6px; }
+
+/* Pantalla "¡Todo listo!" */
+.pantalla--listo { justify-content: center; text-align: center; gap: 10px; }
+.listo__mascota { width: min(64vw, 250px); height: auto; }
+.pantalla--listo .boton { margin-top: 10px; }
+/* Botón secundario (contorno naranja) */
+.boton--sec { background: transparent; color: var(--naranja-osc); border: 2px solid var(--naranja); box-shadow: none; }
+.boton--sec:active { background: #ffe6cf; }
+
+/* ===== Hoja inferior para elegir días y horario (PROVISIONAL: aún sin diseño) ===== */
+.hoja { position: fixed; inset: 0; z-index: 20; background: rgba(60, 30, 10, .45); display: flex; align-items: flex-end; justify-content: center; }
+.hoja__caja { width: 100%; max-width: 430px; background: var(--crema); border-radius: 22px 22px 0 0; padding: 20px 20px max(20px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 14px; }
+.hoja__caja h2 { color: var(--cafe); font-size: 1.3rem; }
+.dias { display: flex; flex-wrap: wrap; gap: 8px; }
+.dia { min-width: 48px; min-height: 44px; padding: 0 10px; border-radius: 22px; background: var(--blanco); border: 1.5px solid var(--borde); font: inherit; cursor: pointer; }
+.dia[aria-pressed="true"] { background: var(--naranja); border-color: var(--naranja); color: #fff; font-weight: 800; }
+.horas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.horas label { display: flex; flex-direction: column; gap: 4px; font-weight: 700; }
+.horas input { min-height: 48px; padding: 0 10px; border: 1.5px solid var(--borde); border-radius: 12px; background: var(--blanco); font: inherit; font-size: 16px; }
