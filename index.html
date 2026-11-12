@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!-- Idioma de la página: español -->
+<html lang="es">
+<head>
+  <!-- Codificación de caracteres para que se vean bien los acentos y la ñ -->
+  <meta charset="UTF-8">
+  <!-- Hace que la página se adapte al ancho del celular -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Título que aparece en la pestaña del navegador -->
+  <title>Sore</title>
+  <!-- Archivo que describe la app para poder instalarla (PWA) -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <!-- Color de la barra del navegador en el celular -->
+  <meta name="theme-color" content="#2f6f4f">
+  <!-- Hoja de estilos de la app -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Pantalla de inicio de sesión -->
+  <section id="pantalla-login" class="login">
+    <h1 class="login__titulo">Sore</h1>
+
+    <!-- Formulario de acceso: correo y contraseña -->
+    <form id="form-login" class="login__form">
+      <label for="correo">Correo</label>
+      <input id="correo" type="email" required autocomplete="username">
+
+      <label for="clave">Contraseña</label>
+      <input id="clave" type="password" required autocomplete="current-password">
+
+      <!-- Botón que envía el formulario -->
+      <button type="submit" class="boton">Entrar</button>
+    </form>
+
+    <!-- Único enlace que queda en el login: recuperar la contraseña.
+         (Se eliminó el bloque .login__alternativas con "Primera vez" y "Código de invitación") -->
+    <button type="button" id="btn-olvide" class="enlace">¿Olvidaste tu contraseña?</button>
+  </section>
+
+  <!-- Mensaje flotante que se muestra unos segundos y desaparece -->
+  <div id="aviso" class="aviso" role="status" hidden></div>
+
+  <!-- Lógica de la app -->
+  <script src="js/app.js"></script>
+</body>
+</html>

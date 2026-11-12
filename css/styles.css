@@ -1,0 +1,81 @@
+/* ===== Variables de color: se cambian aquí y afectan toda la app ===== */
+:root {
+  --verde: #2f6f4f;   /* color principal */
+  --fondo: #f6f7f5;   /* fondo general */
+  --texto: #1d2420;   /* color del texto */
+}
+
+/* Hace que el padding no agrande las cajas y quita márgenes por defecto */
+* { box-sizing: border-box; margin: 0; }
+
+/* Estilo base de toda la página */
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+  min-height: 100vh;
+}
+
+/* ===== Pantalla de login ===== */
+.login {
+  max-width: 360px;           /* ancho máximo de la tarjeta */
+  margin: 0 auto;             /* centrada horizontalmente */
+  padding: 64px 20px;         /* aire alrededor */
+  display: flex;
+  flex-direction: column;     /* elementos uno debajo de otro */
+  gap: 16px;                  /* separación entre elementos */
+}
+
+/* Título "Sore" */
+.login__titulo { text-align: center; color: var(--verde); }
+
+/* Formulario: etiquetas y campos apilados */
+.login__form { display: flex; flex-direction: column; gap: 8px; }
+
+/* Campos de texto */
+.login__form input {
+  padding: 10px;
+  border: 1px solid #c9d1cb;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* Botón principal */
+.boton {
+  margin-top: 8px;
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--verde);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Botón con apariencia de enlace (¿Olvidaste tu contraseña?) */
+.enlace {
+  background: none;
+  border: 0;
+  color: var(--verde);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+/* ===== Aviso flotante ===== */
+.aviso {
+  position: fixed;                 /* queda fijo sobre la pantalla */
+  bottom: 24px;                    /* separado del borde inferior */
+  left: 50%;
+  transform: translateX(-50%);     /* centrado horizontalmente */
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--texto);
+  color: #fff;
+  z-index: 10;                     /* por encima del resto */
+  width: max-content;              /* se ajusta al tamaño del texto */
+  max-width: min(90vw, 390px);     /* nunca más de 90% de pantalla ni 390px */
+}
+
+/* El atributo hidden debe ganarle al display de las reglas anteriores */
+.aviso[hidden] { display: none; }

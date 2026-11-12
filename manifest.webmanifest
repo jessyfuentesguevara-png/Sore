@@ -1,0 +1,8 @@
+{
+  "name": "Sore",
+  "short_name": "Sore",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f7f5",
+  "theme_color": "#2f6f4f"
+}
