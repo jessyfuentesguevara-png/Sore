@@ -230,43 +230,53 @@
     </div>
   </div>
 
-  <!-- ===== INICIO ===== -->
+  <!-- ===== INICIO (Dashboard) ===== -->
   <section id="pantalla-inicio" class="pantalla pantalla--principal" hidden>
     <header class="encab">
-      <!-- Hamburguesa: por ahora abre "Más" (el menú lateral se hace después) -->
-      <button type="button" class="icono-btn" id="ini-menu" aria-label="Menú">
+      <!-- Hamburguesa: lleva a Perfil, donde están todas las opciones -->
+      <button type="button" class="icono-btn" data-ir="perfil" aria-label="Menú y perfil">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
-      <div style="flex:1">
-        <p class="encab__saludo" id="ini-saludo">Hola</p>
-        <p class="encab__sub">Aquí está tu resumen de hoy</p>
-      </div>
-      <!-- Campana: alertas dentro de la app (sin notificaciones push) -->
-      <button type="button" class="icono-btn" id="ini-campana" aria-label="Alertas">
+      <!-- Campana: abre la lista de notificaciones -->
+      <button type="button" class="icono-btn" id="ini-campana" data-abrir="notif" aria-label="Notificaciones">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15zM10 21h4"/></svg>
         <span class="insignia" id="ini-insignia" hidden>0</span>
       </button>
     </header>
-    <span class="ejemplo">Datos de ejemplo</span>
+    <h1 class="saludo" id="ini-saludo">Buenos días</h1>
+    <span class="ejemplo" id="ini-ejemplo">Datos de ejemplo</span>
 
-    <div class="acciones">
-      <button type="button" class="boton boton--chico" data-pendiente="Nuevo pedido">+ Nuevo pedido</button>
-      <button type="button" class="boton boton--chico boton--sec" data-pendiente="Gasto">+ Gasto</button>
+    <!-- Tres recuadros con los números del día -->
+    <div class="estadisticas">
+      <div class="stat"><span class="stat__icono stat__icono--naranja">🍳</span><b id="st-pend">0</b><small>Pedidos pendientes</small></div>
+      <div class="stat"><span class="stat__icono stat__icono--verde">✅</span><b id="st-listos">0</b><small>Listos</small></div>
+      <div class="stat"><span class="stat__icono stat__icono--cafe">🛵</span><b id="st-entregas">0</b><small>Entregados</small></div>
     </div>
 
-    <!-- Ventas de hoy separadas en cobrado y por cobrar -->
+    <!-- Resumen del día: total y cuánto va cobrado -->
     <div class="tarjeta">
-      <h2>Ventas de hoy</h2>
-      <div class="ventas">
-        <div><div class="ventas__cifra ventas__cifra--ok" id="ini-cobrado">$0</div><div class="ventas__nombre">Cobrado</div></div>
-        <div><div class="ventas__cifra ventas__cifra--pend" id="ini-porcobrar">$0</div><div class="ventas__nombre">Por cobrar</div></div>
+      <h2>Resumen del día</h2>
+      <div class="resumen__total" id="ini-total">$0</div>
+      <small>Ventas totales</small>
+      <div class="barra-cobro" aria-hidden="true"><i id="ini-barra"></i></div>
+      <div class="resumen__fila">
+        <span>Cobrado <b class="ok" id="ini-cobrado">$0</b></span>
+        <span>Por cobrar <b class="pend" id="ini-porcobrar">$0</b></span>
       </div>
     </div>
 
     <!-- Próximas entregas, ordenadas por hora -->
-    <div class="tarjeta" id="ini-entregas">
+    <div class="tarjeta">
       <div class="fila-titulo"><h2>Próximas entregas</h2><button type="button" class="enlace-chico" data-ir="pedidos">Ver todos</button></div>
       <div id="ini-lista"></div>
+    </div>
+
+    <!-- Eventos: fase 2 -->
+    <div class="tarjeta tarjeta--suave"><h2>Eventos próximos</h2><p class="suave">Próximamente.</p></div>
+
+    <div class="acciones">
+      <button type="button" class="boton boton--chico" data-abrir="nuevo">+ Nuevo pedido</button>
+      <button type="button" class="boton boton--chico boton--sec" data-pendiente="Registrar gasto">+ Gasto</button>
     </div>
   </section>
 
@@ -274,9 +284,9 @@
   <section id="pantalla-pedidos" class="pantalla pantalla--principal" hidden>
     <header class="encab">
       <h1>Pedidos</h1>
-      <button type="button" class="boton boton--chico" style="width:auto" data-pendiente="Nuevo pedido">+ Nuevo pedido</button>
+      <button type="button" class="boton boton--chico" style="width:auto" data-abrir="nuevo">+ Nuevo pedido</button>
     </header>
-    <span class="ejemplo">Datos de ejemplo</span>
+    <span class="ejemplo" id="ped-ejemplo">Datos de ejemplo</span>
     <div class="pestanas" role="tablist">
       <button type="button" class="pestana" role="tab" id="tab-hoy" data-dia="hoy" aria-selected="true">Hoy</button>
       <button type="button" class="pestana" role="tab" id="tab-manana" data-dia="manana" aria-selected="false">Mañana</button>
@@ -284,22 +294,194 @@
     <div class="lista" id="ped-lista"></div>
   </section>
 
-  <!-- ===== FINANZAS (provisional: aún sin construir) ===== -->
-  <section id="pantalla-finanzas" class="pantalla pantalla--principal provisional" hidden>
-    <header class="encab"><h1>Finanzas</h1></header>
-    <img src="img/mascota-asomada.png" alt="">
-    <p>Esta pantalla se construye en el siguiente paso.</p>
+  <!-- ===== CLIENTES ===== -->
+  <section id="pantalla-clientes" class="pantalla pantalla--principal" hidden>
+    <header class="encab"><h1>Clientes</h1></header>
+    <label class="campo" for="cli-buscar">
+      <svg class="campo__icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>
+      <input id="cli-buscar" type="search" placeholder="Buscar cliente..." autocomplete="off">
+    </label>
+    <div class="lista" id="cli-lista"></div>
+    <button type="button" class="boton" id="cli-agregar">+ Agregar cliente</button>
   </section>
 
-  <!-- ===== MÁS (provisional: aquí irá el menú lateral) ===== -->
-  <section id="pantalla-mas" class="pantalla pantalla--principal provisional" hidden>
-    <header class="encab"><h1>Más</h1></header>
+  <!-- ===== REPORTES (provisional: siguiente ronda) ===== -->
+  <section id="pantalla-reportes" class="pantalla pantalla--principal provisional" hidden>
+    <header class="encab"><h1>Reportes</h1></header>
     <img src="img/mascota-asomada.png" alt="">
-    <p>Aquí irá el menú (Platillos, Clientes, Gastos, Configuración...).</p>
-    <button type="button" id="btn-salir" class="boton">Cerrar sesión</button>
-    <!-- Solo para pruebas: borra la configuración guardada y la vuelve a mostrar -->
-    <button type="button" id="btn-repetir-config" class="enlace">Volver a ver la configuración inicial</button>
+    <p>Ventas, gastos y resumen se construyen en el siguiente paso.</p>
   </section>
+
+  <!-- ===== PERFIL / CONFIGURACIÓN ===== -->
+  <section id="pantalla-perfil" class="pantalla pantalla--principal" hidden>
+    <header class="encab"><h1>Perfil</h1></header>
+
+    <!-- Tarjeta con el nombre de la persona y del negocio -->
+    <div class="tarjeta perfil__cabecera">
+      <div class="avatar avatar--grande" id="pf-avatar">?</div>
+      <div><div class="perfil__nombre" id="pf-nombre">Tu nombre</div><div class="suave" id="pf-negocio">Tu negocio</div></div>
+    </div>
+
+    <p class="seccion">Negocio</p>
+    <div class="tarjeta lista-menu">
+      <button type="button" class="fila-menu" data-pendiente="Información del negocio"><span>🏪 Información del negocio</span><i>›</i></button>
+      <button type="button" class="fila-menu" data-pendiente="Horario de atención"><span>🕒 Horario de atención</span><small id="pf-horario" class="suave"></small></button>
+      <button type="button" class="fila-menu" data-pendiente="Formas de pago"><span>💳 Formas de pago</span><small id="pf-pago" class="suave"></small></button>
+    </div>
+
+    <p class="seccion">Equipo</p>
+    <div class="tarjeta lista-menu">
+      <button type="button" class="fila-menu" data-pendiente="Gestionar usuarios"><span>👥 Gestionar usuarios</span><i>›</i></button>
+      <button type="button" class="fila-menu" data-pendiente="Invitar a mi socio/a"><span>✉️ Invitar a mi socio/a</span><i>›</i></button>
+    </div>
+
+    <p class="seccion">Notificaciones (dentro de la app)</p>
+    <div class="tarjeta lista-menu">
+      <div class="fila-menu"><span>⏰ Entregas próximas</span><button type="button" class="interruptor" id="sw-n-proximas" role="switch" aria-checked="true" aria-label="Entregas próximas"></button></div>
+      <div class="fila-menu"><span>💵 Pedidos por cobrar</span><button type="button" class="interruptor" id="sw-n-cobrar" role="switch" aria-checked="true" aria-label="Pedidos por cobrar"></button></div>
+      <div class="fila-menu"><span>⚠️ Choques de entregas</span><button type="button" class="interruptor" id="sw-n-choques" role="switch" aria-checked="true" aria-label="Choques de entregas"></button></div>
+    </div>
+
+    <p class="seccion">Seguridad y privacidad</p>
+    <div class="tarjeta lista-menu">
+      <button type="button" class="fila-menu" data-pendiente="Cambiar contraseña"><span>🔒 Cambiar contraseña</span><i>›</i></button>
+      <button type="button" class="fila-menu" data-pendiente="Privacidad"><span>🛡️ Privacidad</span><i>›</i></button>
+      <button type="button" class="fila-menu" data-pendiente="Ayuda"><span>❓ Ayuda</span><i>›</i></button>
+    </div>
+
+    <p class="seccion">Datos de prueba</p>
+    <div class="tarjeta lista-menu">
+      <button type="button" class="fila-menu" id="btn-restablecer-ejemplos"><span>🔄 Restablecer datos de ejemplo</span><i>›</i></button>
+      <button type="button" class="fila-menu" id="btn-borrar-ejemplos"><span>🧹 Borrar datos de ejemplo</span><i>›</i></button>
+      <button type="button" class="fila-menu" id="btn-repetir-config"><span>⚙️ Volver a ver la configuración inicial</span><i>›</i></button>
+    </div>
+
+    <button type="button" id="btn-salir" class="boton boton--sec">Cerrar sesión</button>
+  </section>
+
+  <!-- ===== NUEVO PEDIDO ===== -->
+  <section id="pantalla-nuevo" class="pantalla pantalla--principal pantalla--sub" hidden>
+    <header class="encab encab--sub">
+      <button type="button" class="icono-btn" data-atras aria-label="Atrás"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+      <h1>Nuevo pedido</h1><span class="relleno-44"></span>
+    </header>
+    <form id="form-nuevo" class="paso" novalidate>
+      <div class="grupo">
+        <span class="grupo__etiqueta">Cliente</span>
+        <label class="campo" for="np-cliente">
+          <svg class="campo__icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg>
+          <input id="np-cliente" list="lista-clientes" placeholder="Buscar cliente o escribir nombre" autocomplete="off">
+        </label>
+        <datalist id="lista-clientes"></datalist>
+        <p class="campo__msg" id="err-np-cliente" hidden></p>
+      </div>
+
+      <div class="grupo">
+        <span class="grupo__etiqueta">Tipo de pedido</span>
+        <div class="chips" id="np-tipo">
+          <button type="button" class="chip" aria-pressed="true" data-valor="comer">Comer aquí</button>
+          <button type="button" class="chip" aria-pressed="false" data-valor="llevar">Para llevar</button>
+          <button type="button" class="chip" aria-pressed="false" data-valor="domicilio">Domicilio</button>
+        </div>
+      </div>
+
+      <div class="grupo" id="np-dir-grupo" hidden>
+        <label class="campo" for="np-direccion">
+          <svg class="campo__icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <input id="np-direccion" placeholder="Dirección de entrega">
+        </label>
+        <p class="campo__msg" id="err-np-direccion" hidden></p>
+      </div>
+
+      <div class="grupo">
+        <span class="grupo__etiqueta">Hora de entrega</span>
+        <div class="chips" id="np-dia">
+          <button type="button" class="chip" aria-pressed="true" data-valor="hoy">Hoy</button>
+          <button type="button" class="chip" aria-pressed="false" data-valor="manana">Mañana</button>
+        </div>
+        <label class="campo" for="np-hora"><input id="np-hora" type="time"></label>
+        <p class="campo__msg" id="err-np-hora" hidden></p>
+      </div>
+
+      <div class="grupo">
+        <div class="fila-titulo"><span class="grupo__etiqueta">Platillos</span><button type="button" class="enlace-chico" id="np-agregar">+ Agregar platillo</button></div>
+        <div id="np-items"></div>
+        <p class="campo__msg" id="err-np-items" hidden></p>
+      </div>
+
+      <div class="grupo">
+        <div class="fila-interruptor"><span>¿Ya pagó?</span><button type="button" id="np-pagado" class="interruptor" role="switch" aria-checked="false" aria-label="¿Ya pagó?"></button></div>
+        <label class="campo" for="np-metodo">
+          <select id="np-metodo"><option>Efectivo</option><option>Tarjeta</option><option>Transferencia</option></select>
+        </label>
+      </div>
+
+      <div class="total-fila"><span>Total</span><b id="np-total">$0</b></div>
+      <button type="submit" class="boton" id="np-guardar">Guardar pedido</button>
+    </form>
+  </section>
+
+  <!-- ===== DETALLE DEL PEDIDO ===== -->
+  <section id="pantalla-detalle" class="pantalla pantalla--principal pantalla--sub" hidden>
+    <header class="encab encab--sub">
+      <button type="button" class="icono-btn" data-atras aria-label="Atrás"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+      <h1 id="dt-titulo">Pedido</h1>
+      <button type="button" class="icono-btn" id="dt-menu" aria-label="Más opciones"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button>
+    </header>
+    <div id="dt-contenido" class="paso"></div>
+  </section>
+
+  <!-- ===== DETALLE DEL CLIENTE ===== -->
+  <section id="pantalla-cliente" class="pantalla pantalla--principal pantalla--sub" hidden>
+    <header class="encab encab--sub">
+      <button type="button" class="icono-btn" data-atras aria-label="Atrás"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+      <h1>Cliente</h1><span class="relleno-44"></span>
+    </header>
+    <div id="cl-contenido" class="paso"></div>
+  </section>
+
+  <!-- ===== NOTIFICACIONES ===== -->
+  <section id="pantalla-notif" class="pantalla pantalla--principal pantalla--sub" hidden>
+    <header class="encab encab--sub">
+      <button type="button" class="icono-btn" data-atras aria-label="Atrás"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+      <h1>Notificaciones</h1><span class="relleno-44"></span>
+    </header>
+    <div id="nt-lista" class="lista"></div>
+  </section>
+
+  <!-- Hoja: elegir platillo para el pedido -->
+  <div id="hoja-platillos" class="hoja" hidden>
+    <div class="hoja__caja" role="dialog" aria-modal="true" aria-label="Elegir platillo">
+      <h2>Agregar platillo</h2>
+      <div id="hp-lista" class="lista"></div>
+      <button type="button" class="boton boton--sec" data-cerrar-hoja>Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Hoja: agregar cliente -->
+  <div id="hoja-cliente" class="hoja" hidden>
+    <div class="hoja__caja" role="dialog" aria-modal="true" aria-label="Agregar cliente">
+      <h2>Agregar cliente</h2>
+      <label class="campo"><input id="hc-nombre" placeholder="Nombre *" autocomplete="off"></label>
+      <label class="campo"><input id="hc-telefono" type="tel" inputmode="tel" placeholder="WhatsApp (opcional)"></label>
+      <p class="campo__msg" id="err-hc" hidden></p>
+      <button type="button" class="boton" id="hc-guardar">Guardar cliente</button>
+      <button type="button" class="boton boton--sec" data-cerrar-hoja>Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Hoja: opciones del pedido (los tres puntitos) -->
+  <div id="hoja-dt" class="hoja" hidden>
+    <div class="hoja__caja" role="dialog" aria-modal="true" aria-label="Opciones del pedido">
+      <h2>Opciones del pedido</h2>
+      <div class="tarjeta lista-menu">
+        <button type="button" class="fila-menu" id="dt-op-wa"><span>💬 Avisar por WhatsApp</span><i>›</i></button>
+        <button type="button" class="fila-menu" id="dt-op-editar"><span>✏️ Editar pedido</span><i>›</i></button>
+        <button type="button" class="fila-menu" id="dt-op-cancelar"><span>🗑️ Cancelar pedido</span><i>›</i></button>
+      </div>
+      <button type="button" class="boton boton--sec" data-cerrar-hoja>Cerrar</button>
+    </div>
+  </div>
 
   <!-- Barra inferior: la misma en todas las pantallas principales -->
   <nav id="barra-inferior" class="barra" aria-label="Principal" hidden>
@@ -309,11 +491,14 @@
     <button type="button" class="barra__item" data-ir="pedidos">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></svg><span>Pedidos</span>
     </button>
-    <button type="button" class="barra__item" data-ir="finanzas">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V12M12 20V5M19 20v-5"/></svg><span>Finanzas</span>
+    <button type="button" class="barra__item" data-ir="clientes">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.4c2.2.7 3.5 2.6 3.5 5.6"/></svg><span>Clientes</span>
     </button>
-    <button type="button" class="barra__item" data-ir="mas">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span>Más</span>
+    <button type="button" class="barra__item" data-ir="reportes">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V12M12 20V5M19 20v-5"/></svg><span>Reportes</span>
+    </button>
+    <button type="button" class="barra__item" data-ir="perfil">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><span>Perfil</span>
     </button>
   </nav>
 
@@ -325,6 +510,7 @@
   <script src="js/config.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/principal.js"></script>
+  <script src="js/pedido.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

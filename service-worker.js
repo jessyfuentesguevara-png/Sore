@@ -1,13 +1,13 @@
 // Nombre de la versión de la caché; al cambiarlo, el navegador renueva los archivos guardados.
 // Se subió a v3 porque cambiaron las pantallas y se agregaron imágenes y auth.js.
-const VERSION = 'sore-v5';
+const VERSION = 'sore-v6';
 
 // Archivos guardados para abrir sin internet.
 // Las imágenes de la mascota solo se agregan cuando existe la pantalla que las usa
 // (por ahora: splash y asomada para login).
 const ARCHIVOS = [
   './', 'index.html', 'css/styles.css', 'css/config.css', 'css/principal.css',
-  'js/app.js', 'js/auth.js', 'js/config.js', 'js/datos.js', 'js/principal.js',
+  'js/app.js', 'js/auth.js', 'js/config.js', 'js/datos.js', 'js/principal.js', 'js/pedido.js',
   'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png',
   'img/mascota-splash.png', 'img/mascota-asomada.png', 'img/mascota-bandera.png', 'img/mascota-olla.png'

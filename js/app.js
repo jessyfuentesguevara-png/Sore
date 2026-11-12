@@ -6,8 +6,13 @@ const pantallas = {
   listo: document.getElementById('pantalla-listo'),
   inicio: document.getElementById('pantalla-inicio'),
   pedidos: document.getElementById('pantalla-pedidos'),
-  finanzas: document.getElementById('pantalla-finanzas'),
-  mas: document.getElementById('pantalla-mas')
+  clientes: document.getElementById('pantalla-clientes'),
+  reportes: document.getElementById('pantalla-reportes'),
+  perfil: document.getElementById('pantalla-perfil'),
+  nuevo: document.getElementById('pantalla-nuevo'),
+  detalle: document.getElementById('pantalla-detalle'),
+  cliente: document.getElementById('pantalla-cliente'),
+  notif: document.getElementById('pantalla-notif')
 };
 const aviso = document.getElementById('aviso');
 const formLogin = document.getElementById('form-login');
@@ -19,8 +24,25 @@ const btnOlvide = document.getElementById('btn-olvide');
 const btnSalir = document.getElementById('btn-salir');
 const msgError = document.getElementById('login-error');
 
+// Pila de pantallas visitadas: sirve para que la flecha "atrás" regrese a donde estabas
+const pila = [];
+let pantallaActual = '';
+
+// Abre una pantalla secundaria (Nuevo pedido, Detalle...) recordando la actual
+function abrirPantalla(nombre) {
+  if (pantallaActual) pila.push(pantallaActual);
+  mostrarPantalla(nombre, true);
+}
+
+// Flecha atrás: vuelve a la pantalla anterior (o a Inicio si no hay)
+function volver() {
+  mostrarPantalla(pila.pop() || 'inicio', true);
+}
+
 // Muestra solo la pantalla indicada y oculta las demás
-function mostrarPantalla(nombre) {
+function mostrarPantalla(nombre, conservarPila) {
+  if (!conservarPila) pila.length = 0; // al cambiar de pestaña se olvida el recorrido
+  pantallaActual = nombre;
   for (const [clave, el] of Object.entries(pantallas)) {
     el.hidden = clave !== nombre;
   }
@@ -36,6 +58,12 @@ function mostrarPantalla(nombre) {
   // Vuelve a dibujar el contenido de la pantalla que se abre
   if (nombre === 'inicio') renderInicio();
   if (nombre === 'pedidos') renderPedidos();
+  if (nombre === 'clientes') renderClientes();
+  if (nombre === 'perfil') renderPerfil();
+  if (nombre === 'notif') renderNotif();
+  if (nombre === 'nuevo') prepararNuevoPedido();
+  if (nombre === 'detalle') renderDetalle();
+  if (nombre === 'cliente') renderCliente();
 }
 
 // Después de iniciar sesión: si falta la configuración inicial va ahí; si no, al inicio
