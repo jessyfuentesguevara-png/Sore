@@ -22,6 +22,8 @@
   <link rel="stylesheet" href="css/principal.css">
   <!-- Inicio y Pedidos según el diseño -->
   <link rel="stylesheet" href="css/inicio.css">
+  <!-- Perfil, Configuración, Platillos y Detalle del pedido -->
+  <link rel="stylesheet" href="css/pantallas.css">
 </head>
 <body>
 
@@ -348,41 +350,104 @@
     <p>Ventas, gastos y resumen se construyen en el siguiente paso.</p>
   </section>
 
-  <!-- ===== PERFIL / CONFIGURACIÓN ===== -->
-  <section id="pantalla-perfil" class="pantalla pantalla--principal" hidden>
-    <header class="encab"><h1>Perfil</h1></header>
+  <!-- ===== PERFIL (según el diseño nuevo) ===== -->
+  <section id="pantalla-perfil" class="pantalla pantalla--principal pantalla--perfil" hidden>
+    <!-- Fondo cálido de la parte de arriba (aquí irá la foto de comida cuando la tengamos) -->
+    <div class="pf-hero" aria-hidden="true"></div>
+    <header class="pf-top">
+      <button type="button" class="icono-btn icono-btn--blanco" data-ir="inicio" aria-label="Volver al inicio">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>
+      </button>
+      <h1>Perfil</h1>
+      <!-- Engrane: abre Configuración -->
+      <button type="button" class="icono-btn icono-btn--blanco" data-abrir="configuracion" aria-label="Configuración">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </button>
+    </header>
 
-    <!-- Tarjeta con el nombre de la persona y del negocio -->
-    <div class="tarjeta perfil__cabecera">
-      <div class="avatar avatar--grande" id="pf-avatar">?</div>
-      <div><div class="perfil__nombre" id="pf-nombre">Tu nombre</div><div class="suave" id="pf-negocio">Tu negocio</div></div>
+    <!-- Foto de perfil con botón de cámara -->
+    <div class="pf-avatar-caja">
+      <img id="pf-foto" class="pf-foto" src="img/mascota-asomada.png" alt="Foto de perfil">
+      <label class="pf-camara" aria-label="Cambiar foto de perfil">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        <input type="file" id="pf-input-foto" accept="image/*">
+      </label>
+    </div>
+    <h2 class="pf-nombre" id="pf-nombre">Tu nombre</h2>
+    <span class="pf-rol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14a4 4 0 1 1 2.5-7 4 4 0 0 1 5 0A4 4 0 1 1 17 14v5H7z"/><path d="M7 17h10"/></svg>Chef</span>
+
+    <!-- Datos personales y del negocio -->
+    <div class="tarjeta pf-card">
+      <button type="button" class="pf-fila" data-editar="nombre">
+        <span class="pf-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span>
+        <span class="pf-txt"><small>Nombre</small><b id="pf-v-nombre"></b></span><i aria-hidden="true">›</i>
+      </button>
+      <button type="button" class="pf-fila" data-editar="negocio">
+        <span class="pf-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16l-1-5H5zM5 10v9h14v-9M10 19v-5h4v5"/></svg></span>
+        <span class="pf-txt"><small>Negocio</small><b id="pf-v-negocio"></b></span><i aria-hidden="true">›</i>
+      </button>
+      <button type="button" class="pf-fila" data-editar="whatsapp">
+        <span class="pf-ico pf-ico--wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8z"/><path d="M9.5 9.5c.3 2.2 2.3 4.2 4.8 4.8l1.3-1.3-2-1-.9.9c-.9-.4-1.8-1.3-2.2-2.2l.9-.9-1-2z"/></svg></span>
+        <span class="pf-txt"><small>WhatsApp del negocio</small><b id="pf-v-whatsapp"></b></span><i aria-hidden="true">›</i>
+      </button>
+      <button type="button" class="pf-fila" data-editar="ciudad">
+        <span class="pf-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+        <span class="pf-txt"><small>Ciudad o zona</small><b id="pf-v-ciudad"></b></span><i aria-hidden="true">›</i>
+      </button>
     </div>
 
-    <p class="seccion">Negocio</p>
-    <div class="tarjeta lista-menu">
-      <button type="button" class="fila-menu" data-pendiente="Información del negocio"><span>🏪 Información del negocio</span><i>›</i></button>
-      <button type="button" class="fila-menu" data-pendiente="Horario de atención"><span>🕒 Horario de atención</span><small id="pf-horario" class="suave"></small></button>
-      <button type="button" class="fila-menu" data-pendiente="Formas de pago"><span>💳 Formas de pago</span><small id="pf-pago" class="suave"></small></button>
+    <!-- Cómo trabaja el negocio -->
+    <div class="tarjeta pf-card">
+      <button type="button" class="pf-fila" data-editar="horario">
+        <span class="pf-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span>
+        <span class="pf-txt"><small>Horario de servicio</small><b id="pf-v-horario"></b></span><i aria-hidden="true">›</i>
+      </button>
+      <button type="button" class="pf-fila" data-editar="entrega">
+        <span class="pf-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 7h12v9H2zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></span>
+        <span class="pf-txt"><small>Cómo entregas</small><b id="pf-v-entrega"></b></span><i aria-hidden="true">›</i>
+      </button>
+      <button type="button" class="pf-fila" data-editar="pago">
+        <span class="pf-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span>
+        <span class="pf-txt"><small>Formas de pago</small><b id="pf-v-pago"></b></span><i aria-hidden="true">›</i>
+      </button>
+      <button type="button" class="pf-fila" data-editar="eventos">
+        <span class="pf-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></span>
+        <span class="pf-txt"><small>Eventos</small><b id="pf-v-eventos"></b></span><i aria-hidden="true">›</i>
+      </button>
     </div>
 
-    <p class="seccion">Equipo</p>
-    <div class="tarjeta lista-menu">
-      <button type="button" class="fila-menu" data-pendiente="Gestionar usuarios"><span>👥 Gestionar usuarios</span><i>›</i></button>
-      <button type="button" class="fila-menu" data-pendiente="Invitar a mi socio/a"><span>✉️ Invitar a mi socio/a</span><i>›</i></button>
-    </div>
+    <button type="button" id="btn-salir" class="boton boton--salir">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg>Cerrar sesión
+    </button>
+  </section>
 
-    <p class="seccion">Notificaciones (dentro de la app)</p>
-    <div class="tarjeta lista-menu">
-      <div class="fila-menu"><span>⏰ Entregas próximas</span><button type="button" class="interruptor" id="sw-n-proximas" role="switch" aria-checked="true" aria-label="Entregas próximas"></button></div>
-      <div class="fila-menu"><span>💵 Pedidos por cobrar</span><button type="button" class="interruptor" id="sw-n-cobrar" role="switch" aria-checked="true" aria-label="Pedidos por cobrar"></button></div>
-      <div class="fila-menu"><span>⚠️ Choques de entregas</span><button type="button" class="interruptor" id="sw-n-choques" role="switch" aria-checked="true" aria-label="Choques de entregas"></button></div>
-    </div>
-
-    <p class="seccion">Seguridad y privacidad</p>
-    <div class="tarjeta lista-menu">
-      <button type="button" class="fila-menu" data-pendiente="Cambiar contraseña"><span>🔒 Cambiar contraseña</span><i>›</i></button>
-      <button type="button" class="fila-menu" data-pendiente="Privacidad"><span>🛡️ Privacidad</span><i>›</i></button>
-      <button type="button" class="fila-menu" data-pendiente="Ayuda"><span>❓ Ayuda</span><i>›</i></button>
+  <!-- ===== CONFIGURACIÓN (lista del diseño) ===== -->
+  <section id="pantalla-configuracion" class="pantalla pantalla--principal pantalla--sub" hidden>
+    <header class="encab encab--sub">
+      <button type="button" class="icono-btn" data-atras aria-label="Atrás"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+      <h1>Configuración</h1><span class="relleno-44"></span>
+    </header>
+    <div class="tarjeta cfg-lista">
+      <button type="button" class="cfg-fila" data-ir="perfil">
+        <span class="cfg-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16l-1-5H5zM5 10v9h14v-9M10 19v-5h4v5"/></svg></span>
+        <span class="cfg-txt"><b>Mi negocio</b><small>Datos, horario y contacto</small></span><i aria-hidden="true">›</i>
+      </button>
+      <button type="button" class="cfg-fila" data-abrir="platillos">
+        <span class="cfg-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-3 4-3 7h3v11"/></svg></span>
+        <span class="cfg-txt"><b>Mis platillos</b><small>Tu menú con fotos y precios</small></span><i aria-hidden="true">›</i>
+      </button>
+      <button type="button" class="cfg-fila" data-pendiente="Equipo">
+        <span class="cfg-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.4c2.2.7 3.5 2.6 3.5 5.6"/></svg></span>
+        <span class="cfg-txt"><b>Equipo</b><small>Gestiona accesos</small></span><i aria-hidden="true">›</i>
+      </button>
+      <button type="button" class="cfg-fila" data-pendiente="Seguridad">
+        <span class="cfg-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+        <span class="cfg-txt"><b>Seguridad</b><small>Contraseña y acceso</small></span><i aria-hidden="true">›</i>
+      </button>
+      <button type="button" class="cfg-fila" id="cfg-notif">
+        <span class="cfg-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15zM10 21h4"/></svg></span>
+        <span class="cfg-txt"><b>Notificaciones</b><small>Pedidos, eventos y más</small></span><i aria-hidden="true">›</i>
+      </button>
     </div>
 
     <p class="seccion">Datos de prueba</p>
@@ -392,14 +457,68 @@
       <button type="button" class="fila-menu" id="btn-repetir-config"><span>⚙️ Volver a ver la configuración inicial</span><i>›</i></button>
     </div>
 
-    <button type="button" id="btn-salir" class="boton boton--sec">Cerrar sesión</button>
+    <button type="button" id="cfg-salir" class="boton boton--salir">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg>Cerrar sesión
+    </button>
+  </section>
+
+  <!-- ===== PLATILLOS (tu menú personalizado) ===== -->
+  <section id="pantalla-platillos" class="pantalla pantalla--principal pantalla--sub" hidden>
+    <header class="encab encab--sub">
+      <button type="button" class="icono-btn" data-atras aria-label="Atrás"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+      <h1>Platillos</h1><span class="relleno-44"></span>
+    </header>
+    <div class="filtros" id="pl-filtros"></div>
+    <div class="lista-pedidos" id="pl-lista"></div>
+    <button type="button" class="boton boton--agregar" id="pl-agregar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Agregar platillo
+    </button>
+  </section>
+
+  <!-- ===== AGREGAR / EDITAR PLATILLO ===== -->
+  <section id="pantalla-platillo" class="pantalla pantalla--principal pantalla--sub" hidden>
+    <header class="encab encab--sub">
+      <button type="button" class="icono-btn" data-atras aria-label="Atrás"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+      <h1 id="pe-titulo">Editar platillo</h1><span class="relleno-44"></span>
+    </header>
+    <form id="form-platillo" class="paso" novalidate>
+      <!-- Foto del platillo: se elige de la galería o la cámara -->
+      <label class="pe-foto" for="pe-input-foto">
+        <img id="pe-foto" alt="" hidden>
+        <span class="pe-foto__vacia" id="pe-foto-vacia"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Agregar foto del platillo</span>
+        <span class="pe-foto__cambiar">Cambiar foto</span>
+        <input type="file" id="pe-input-foto" accept="image/*">
+      </label>
+      <div class="grupo">
+        <label class="grupo__etiqueta" for="pe-nombre">Nombre del platillo <span class="req">*</span></label>
+        <label class="campo"><input id="pe-nombre" type="text" placeholder="Ej. Enchiladas" autocomplete="off"></label>
+        <p class="campo__msg" id="err-pe-nombre" hidden></p>
+      </div>
+      <div class="grupo">
+        <label class="grupo__etiqueta" for="pe-categoria">Categoría</label>
+        <label class="campo"><select id="pe-categoria"></select></label>
+      </div>
+      <div class="grupo">
+        <label class="grupo__etiqueta" for="pe-precio">Precio de venta <span class="req">*</span></label>
+        <label class="campo"><span class="campo__pref">$</span><input id="pe-precio" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
+        <p class="campo__msg" id="err-pe-precio" hidden></p>
+      </div>
+      <div class="grupo">
+        <label class="grupo__etiqueta" for="pe-costo">Costo de receta (opcional)</label>
+        <label class="campo"><span class="campo__pref">$</span><input id="pe-costo" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></label>
+        <p class="suave" id="pe-ganancia"></p>
+      </div>
+      <div class="fila-interruptor"><span>Disponible hoy</span><button type="button" id="pe-disponible" class="interruptor" role="switch" aria-checked="true" aria-label="Disponible hoy"></button></div>
+      <button type="submit" class="boton" id="pe-guardar">Guardar cambios</button>
+      <button type="button" class="enlace enlace--peligro" id="pe-eliminar">Eliminar platillo</button>
+    </form>
   </section>
 
   <!-- ===== NUEVO PEDIDO ===== -->
   <section id="pantalla-nuevo" class="pantalla pantalla--principal pantalla--sub" hidden>
     <header class="encab encab--sub">
       <button type="button" class="icono-btn" data-atras aria-label="Atrás"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
-      <h1>Nuevo pedido</h1><span class="relleno-44"></span>
+      <h1 id="np-titulo">Nuevo pedido</h1><span class="relleno-44"></span>
     </header>
     <form id="form-nuevo" class="paso" novalidate>
       <div class="grupo">
@@ -415,9 +534,12 @@
       <div class="grupo">
         <span class="grupo__etiqueta">Tipo de pedido</span>
         <div class="chips" id="np-tipo">
-          <button type="button" class="chip" aria-pressed="true" data-valor="comer">Comer aquí</button>
-          <button type="button" class="chip" aria-pressed="false" data-valor="llevar">Para llevar</button>
-          <button type="button" class="chip" aria-pressed="false" data-valor="domicilio">Domicilio</button>
+          <button type="button" class="chip chip--tile" aria-pressed="true" data-valor="comer">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 4v9a3 3 0 0 0 6 0V4M12 4v24M22 4c-3 3-4 7-4 11h4v13" fill="none" stroke="#f27a1a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Comer aquí</button>
+          <button type="button" class="chip chip--tile" aria-pressed="false" data-valor="llevar">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 11h20l-2 17H8z" fill="none" stroke="#f27a1a" stroke-width="2.6" stroke-linejoin="round"/><path d="M11 11V9a5 5 0 0 1 10 0v2" fill="none" stroke="#f27a1a" stroke-width="2.6" stroke-linecap="round"/></svg>Para llevar</button>
+          <button type="button" class="chip chip--tile" aria-pressed="false" data-valor="domicilio">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="9" width="17" height="13" rx="2" fill="#f2a33a"/><path d="M19 13h6l5 5v4H19z" fill="#f27a1a"/><circle cx="9" cy="24" r="3.2" fill="#4b2a14"/><circle cx="24" cy="24" r="3.2" fill="#4b2a14"/></svg>Domicilio</button>
         </div>
       </div>
 
@@ -457,14 +579,13 @@
     </form>
   </section>
 
-  <!-- ===== DETALLE DEL PEDIDO ===== -->
+  <!-- ===== DETALLE DEL PEDIDO (según el diseño) ===== -->
   <section id="pantalla-detalle" class="pantalla pantalla--principal pantalla--sub" hidden>
     <header class="encab encab--sub">
       <button type="button" class="icono-btn" data-atras aria-label="Atrás"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
-      <h1 id="dt-titulo">Pedido</h1>
-      <button type="button" class="icono-btn" id="dt-menu" aria-label="Más opciones"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button>
+      <h1 id="dt-titulo">Detalle del pedido</h1><span class="relleno-44"></span>
     </header>
-    <div id="dt-contenido" class="paso"></div>
+    <div id="dt-contenido" class="dt"></div>
   </section>
 
   <!-- ===== DETALLE DEL CLIENTE ===== -->
@@ -490,6 +611,7 @@
     <div class="hoja__caja" role="dialog" aria-modal="true" aria-label="Elegir platillo">
       <h2>Agregar platillo</h2>
       <div id="hp-lista" class="lista"></div>
+      <button type="button" class="enlace-chico" id="hp-administrar">Administrar mis platillos</button>
       <button type="button" class="boton boton--sec" data-cerrar-hoja>Cerrar</button>
     </div>
   </div>
@@ -506,16 +628,28 @@
     </div>
   </div>
 
-  <!-- Hoja: opciones del pedido (los tres puntitos) -->
-  <div id="hoja-dt" class="hoja" hidden>
-    <div class="hoja__caja" role="dialog" aria-modal="true" aria-label="Opciones del pedido">
-      <h2>Opciones del pedido</h2>
+  <!-- Hoja: editar un dato del perfil (nombre, negocio, horario...) -->
+  <div id="hoja-editar" class="hoja" hidden>
+    <div class="hoja__caja" role="dialog" aria-modal="true" aria-labelledby="he-titulo">
+      <h2 id="he-titulo">Editar</h2>
+      <div id="he-cuerpo" class="paso"></div>
+      <p class="campo__msg" id="err-he" hidden></p>
+      <button type="button" class="boton" id="he-guardar">Guardar</button>
+      <button type="button" class="boton boton--sec" data-cerrar-hoja>Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Hoja: notificaciones dentro de la app -->
+  <div id="hoja-notif" class="hoja" hidden>
+    <div class="hoja__caja" role="dialog" aria-modal="true" aria-label="Notificaciones">
+      <h2>Notificaciones</h2>
+      <p class="suave">Avisos dentro de la app. No se envían notificaciones al celular.</p>
       <div class="tarjeta lista-menu">
-        <button type="button" class="fila-menu" id="dt-op-wa"><span>💬 Avisar por WhatsApp</span><i>›</i></button>
-        <button type="button" class="fila-menu" id="dt-op-editar"><span>✏️ Editar pedido</span><i>›</i></button>
-        <button type="button" class="fila-menu" id="dt-op-cancelar"><span>🗑️ Cancelar pedido</span><i>›</i></button>
+        <div class="fila-menu"><span>⏰ Entregas próximas</span><button type="button" class="interruptor" id="sw-n-proximas" role="switch" aria-checked="true" aria-label="Entregas próximas"></button></div>
+        <div class="fila-menu"><span>💵 Pedidos por cobrar</span><button type="button" class="interruptor" id="sw-n-cobrar" role="switch" aria-checked="true" aria-label="Pedidos por cobrar"></button></div>
+        <div class="fila-menu"><span>⚠️ Choques de entregas</span><button type="button" class="interruptor" id="sw-n-choques" role="switch" aria-checked="true" aria-label="Choques de entregas"></button></div>
       </div>
-      <button type="button" class="boton boton--sec" data-cerrar-hoja>Cerrar</button>
+      <button type="button" class="boton" data-cerrar-hoja>Listo</button>
     </div>
   </div>
 
@@ -548,6 +682,7 @@
   <script src="js/principal.js"></script>
   <script src="js/inicio.js"></script>
   <script src="js/pedido.js"></script>
+  <script src="js/perfil.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

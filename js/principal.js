@@ -119,33 +119,6 @@ function renderNotif() {
     </button>`).join('');
 }
 
-// ----- PERFIL -----
-function renderPerfil() {
-  const cfg = leerConfig();
-  $('pf-avatar').textContent = cfg.nombre ? iniciales(cfg.nombre) : '?';
-  $('pf-nombre').textContent = cfg.nombre || 'Tu nombre';
-  $('pf-negocio').textContent = cfg.negocio ? `${cfg.negocio}${cfg.tipo ? ' · ' + cfg.tipo : ''}` : 'Tu negocio';
-  $('pf-horario').textContent = cfg.dias && cfg.dias.length ? `${cfg.dias.join(', ')} ${cfg.desde}–${cfg.hasta}` : 'Sin definir';
-  $('pf-pago').textContent = cfg.pago && cfg.pago.length ? cfg.pago.join(', ') : 'Sin definir';
-  const n = leerNotif();
-  $('sw-n-proximas').setAttribute('aria-checked', String(n.proximas));
-  $('sw-n-cobrar').setAttribute('aria-checked', String(n.cobrar));
-  $('sw-n-choques').setAttribute('aria-checked', String(n.choques));
-}
-// Interruptores de notificaciones: guardan al instante
-[['sw-n-proximas', 'proximas'], ['sw-n-cobrar', 'cobrar'], ['sw-n-choques', 'choques']].forEach(([id, clave]) => {
-  $(id).addEventListener('click', () => {
-    const n = leerNotif();
-    n[clave] = !n[clave];
-    guardarNotif(n);
-    $(id).setAttribute('aria-checked', String(n[clave]));
-  });
-});
-$('btn-restablecer-ejemplos').addEventListener('click', () => { restablecerEjemplos(); mostrarAviso('Datos de ejemplo restablecidos.'); });
-$('btn-borrar-ejemplos').addEventListener('click', () => {
-  if (confirm('¿Borrar los pedidos de ejemplo? Los que tú registraste se quedan.')) { borrarEjemplos(); mostrarAviso('Datos de ejemplo borrados.'); }
-});
-
 // ----- Clics: se atienden todos aquí (delegación de eventos) -----
 document.addEventListener('click', (e) => {
   const t = e.target;
@@ -164,11 +137,11 @@ document.addEventListener('click', (e) => {
 
   // Abrir pantalla secundaria (Nuevo pedido, Notificaciones)
   const abrir = t.closest('[data-abrir]');
-  if (abrir) { if (abrir.dataset.abrir === 'nuevo') pedidoParaCliente = ''; abrirPantalla(abrir.dataset.abrir); return; }
+  if (abrir) { if (abrir.dataset.abrir === 'nuevo') { pedidoParaCliente = ''; pedidoEditando = 0; } abrirPantalla(abrir.dataset.abrir); return; }
 
   // Nuevo pedido con el cliente ya elegido
   const para = t.closest('[data-nuevo-para]');
-  if (para) { pedidoParaCliente = para.dataset.nuevoPara; abrirPantalla('nuevo'); return; }
+  if (para) { pedidoParaCliente = para.dataset.nuevoPara; pedidoEditando = 0; abrirPantalla('nuevo'); return; }
 
   // Detalle de un cliente
   const cli = t.closest('[data-cliente]');

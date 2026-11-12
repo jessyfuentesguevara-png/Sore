@@ -1,9 +1,10 @@
-// ===== Nuevo pedido y Detalle del pedido =====
+// ===== Nuevo pedido (y editar pedido) y Detalle del pedido =====
 
 let pedidoActual = 0;        // id del pedido que se ve en el detalle
+let pedidoEditando = 0;      // id del pedido que se está editando (0 = pedido nuevo)
 let pedidoParaCliente = '';  // si viene de un cliente, su nombre
 
-// Estado del formulario de Nuevo pedido
+// Estado del formulario. dia: "hoy", "manana" o null (se conserva la fecha del pedido que se edita)
 const np = { tipo: 'comer', dia: 'hoy', items: [], pagado: false };
 
 // Hora actual en formato "HH:MM"
@@ -17,22 +18,38 @@ function elegirChip(idGrupo, valor) {
   $(idGrupo).querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.valor === valor)));
 }
 
-// ----- NUEVO PEDIDO -----
+// ----- NUEVO PEDIDO / EDITAR PEDIDO -----
 function prepararNuevoPedido() {
-  // Reinicia el formulario
-  Object.assign(np, { tipo: 'comer', dia: 'hoy', items: [], pagado: false });
+  const p = pedidoEditando ? buscarPedido(pedidoEditando) : null;
   $('form-nuevo').reset();
-  $('np-cliente').value = pedidoParaCliente;
-  elegirChip('np-tipo', 'comer');
-  elegirChip('np-dia', 'hoy');
-  $('np-dir-grupo').hidden = true;
-  $('np-pagado').setAttribute('aria-checked', 'false');
-  // Hora sugerida: la siguiente media hora
-  const d = new Date(); d.setMinutes(d.getMinutes() < 30 ? 30 : 60, 0, 0);
-  $('np-hora').value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-  // Sugerencias de clientes al escribir el nombre
-  $('lista-clientes').innerHTML = listaClientes().map((c) => `<option value="${esc(c.nombre)}">`).join('');
   ['err-np-cliente', 'err-np-direccion', 'err-np-hora', 'err-np-items'].forEach((id) => { $(id).hidden = true; });
+  $('lista-clientes').innerHTML = listaClientes().map((c) => `<option value="${esc(c.nombre)}">`).join('');
+
+  if (p) {
+    // Editar: se llenan los campos con lo que ya tiene el pedido
+    $('np-titulo').textContent = 'Editar pedido';
+    $('np-guardar').textContent = 'Guardar cambios';
+    Object.assign(np, {
+      tipo: p.tipo, pagado: p.pagado, items: p.items.map((i) => ({ ...i })),
+      dia: p.fecha === fechaISO(0) ? 'hoy' : p.fecha === fechaISO(1) ? 'manana' : null
+    });
+    $('np-cliente').value = p.cliente;
+    $('np-direccion').value = p.direccion || '';
+    $('np-hora').value = p.hora;
+    $('np-metodo').value = p.metodo || 'Efectivo';
+  } else {
+    // Nuevo: formulario limpio con la siguiente media hora
+    $('np-titulo').textContent = 'Nuevo pedido';
+    $('np-guardar').textContent = 'Guardar pedido';
+    Object.assign(np, { tipo: 'comer', dia: 'hoy', items: [], pagado: false });
+    $('np-cliente').value = pedidoParaCliente;
+    const d = new Date(); d.setMinutes(d.getMinutes() < 30 ? 30 : 60, 0, 0);
+    $('np-hora').value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+  elegirChip('np-tipo', np.tipo);
+  elegirChip('np-dia', np.dia || '');
+  $('np-dir-grupo').hidden = np.tipo !== 'domicilio';
+  $('np-pagado').setAttribute('aria-checked', String(np.pagado));
   renderItemsNuevo();
 }
 
@@ -44,7 +61,8 @@ function renderItemsNuevo() {
     $('np-items').innerHTML = np.items.map((it, i) => `
       <div class="item-pedido" data-i="${i}">
         <div class="item-pedido__fila">
-          <div><b>${esc(it.platillo)}</b><div class="suave">${dinero(it.precio)} c/u</div></div>
+          ${htmlFoto(it.platillo)}
+          <div style="flex:1;min-width:0"><b>${esc(it.platillo)}</b><div class="suave">${dinero(it.precio)} c/u</div></div>
           <div class="paso-cant">
             <button type="button" data-cant="-1" aria-label="Quitar uno">−</button>
             <span>${it.n}</span>
@@ -61,7 +79,7 @@ function renderItemsNuevo() {
 $('np-tipo').addEventListener('click', (e) => {
   const c = e.target.closest('.chip'); if (!c) return;
   np.tipo = c.dataset.valor; elegirChip('np-tipo', np.tipo);
-  $('np-dir-grupo').hidden = np.tipo !== 'domicilio'; // la dirección solo para domicilio
+  $('np-dir-grupo').hidden = np.tipo !== 'domicilio';
 });
 $('np-dia').addEventListener('click', (e) => {
   const c = e.target.closest('.chip'); if (!c) return;
@@ -77,7 +95,7 @@ $('np-items').addEventListener('click', (e) => {
   const b = e.target.closest('[data-cant]'); if (!b) return;
   const i = Number(b.closest('.item-pedido').dataset.i);
   np.items[i].n += Number(b.dataset.cant);
-  if (np.items[i].n <= 0) np.items.splice(i, 1); // al llegar a 0 se quita
+  if (np.items[i].n <= 0) np.items.splice(i, 1);
   renderItemsNuevo();
 });
 $('np-items').addEventListener('input', (e) => {
@@ -85,29 +103,32 @@ $('np-items').addEventListener('input', (e) => {
   np.items[Number(e.target.closest('.item-pedido').dataset.i)].para = e.target.value;
 });
 
-// Hoja para elegir platillos del catálogo
+// Hoja para elegir platillos de TU menú
 $('np-agregar').addEventListener('click', () => {
-  $('hp-lista').innerHTML = PLATILLOS.map((p, i) => `
-    <button type="button" class="tarjeta fila-menu" data-plato="${i}"><span>${esc(p.nombre)}</span><b>${dinero(p.precio)}</b></button>`).join('');
+  const disponibles = PLATILLOS.filter((p) => p.disponible);
+  $('hp-lista').innerHTML = disponibles.length ? disponibles.map((p) => `
+    <button type="button" class="tarjeta fila-menu fila-menu--foto" data-plato="${p.id}">
+      ${htmlFotoSrc(p.foto)}<span style="flex:1;text-align:left"><b>${esc(p.nombre)}</b></span><b>${dinero(p.precio)}</b>
+    </button>`).join('') : '<p class="suave">No tienes platillos disponibles. Agrégalos en "Administrar mis platillos".</p>';
   $('hoja-platillos').hidden = false;
 });
 $('hp-lista').addEventListener('click', (e) => {
   const b = e.target.closest('[data-plato]'); if (!b) return;
-  const plato = PLATILLOS[Number(b.dataset.plato)];
+  const plato = PLATILLOS.find((p) => p.id === Number(b.dataset.plato)); if (!plato) return;
   const ya = np.items.find((i) => i.platillo === plato.nombre);
   if (ya) ya.n += 1; else np.items.push({ n: 1, platillo: plato.nombre, para: '', precio: plato.precio });
   $('err-np-items').hidden = true;
   $('hoja-platillos').hidden = true;
   renderItemsNuevo();
 });
+$('hp-administrar').addEventListener('click', () => { $('hoja-platillos').hidden = true; abrirPantalla('platillos'); });
 
-// Guardar el pedido
+// Guardar el pedido (nuevo o editado)
 $('form-nuevo').addEventListener('submit', async (e) => {
   e.preventDefault();
   const cliente = $('np-cliente').value.trim();
   const direccion = $('np-direccion').value.trim();
   const hora = $('np-hora').value;
-  // Validaciones con mensajes debajo de cada campo
   const fallas = {
     'err-np-cliente': cliente ? '' : 'Escribe o elige el cliente.',
     'err-np-direccion': np.tipo === 'domicilio' && !direccion ? 'Escribe la dirección de entrega.' : '',
@@ -121,78 +142,103 @@ $('form-nuevo').addEventListener('submit', async (e) => {
   }
   if (hayError) return;
 
-  // Botón desactivado con "Guardando..." mientras se guarda
   const boton = $('np-guardar');
+  const textoBoton = boton.textContent;
   boton.disabled = true; boton.textContent = 'Guardando...';
   await new Promise((r) => setTimeout(r, 500));
-  boton.disabled = false; boton.textContent = 'Guardar pedido';
+  boton.disabled = false; boton.textContent = textoBoton;
 
-  // Si el cliente ya existe, se reutiliza su teléfono
   const existente = listaClientes().find((c) => c.nombre.toLowerCase() === cliente.toLowerCase());
   const nombreFinal = existente ? existente.nombre : cliente;
+  const items = np.items.map((i) => ({ n: i.n, platillo: i.platillo, para: (i.para || '').trim(), precio: i.precio }));
+
+  if (pedidoEditando) {
+    // Editar: se actualiza el pedido existente y se vuelve al detalle
+    const p = buscarPedido(pedidoEditando);
+    Object.assign(p, {
+      cliente: nombreFinal, hora, tipo: np.tipo, direccion: np.tipo === 'domicilio' ? direccion : '',
+      pagado: np.pagado, metodo: $('np-metodo').value, items,
+      fecha: np.dia ? fechaISO(np.dia === 'hoy' ? 0 : 1) : p.fecha,
+      telefono: p.telefono || (existente ? existente.telefono : '')
+    });
+    guardarPedidos();
+    pedidoEditando = 0;
+    volver();
+    mostrarAviso(`Pedido #${p.id} actualizado.`);
+    return;
+  }
+
   const pedido = {
-    id: siguienteId(), fecha: fechaISO(np.dia === 'hoy' ? 0 : 1), hora, cliente: nombreFinal,
+    id: siguienteId(), fecha: fechaISO(np.dia === 'manana' ? 1 : 0), hora, cliente: nombreFinal,
     telefono: existente ? existente.telefono : '', direccion: np.tipo === 'domicilio' ? direccion : '',
     tipo: np.tipo, estado: 'pendiente', pagado: np.pagado, metodo: $('np-metodo').value,
-    items: np.items.map((i) => ({ n: i.n, platillo: i.platillo, para: i.para.trim(), precio: i.precio })),
-    tiempos: { pendiente: horaAhora() }
+    items, tiempos: { pendiente: horaAhora() }
   };
   PEDIDOS.push(pedido);
   guardarPedidos();
-  diaPedidos = np.dia;
+  diaPedidos = np.dia === 'manana' ? 'manana' : 'hoy';
   pedidoParaCliente = '';
   mostrarPantalla('pedidos');
   mostrarAviso(`Pedido #${pedido.id} guardado.`);
 });
 
-// ----- DETALLE DEL PEDIDO -----
-const ORDEN_ESTADOS = ['pendiente', 'preparando', 'listo', 'entregado'];
-const NOMBRE_PASO = { pendiente: 'Recibido', preparando: 'En preparación', listo: 'Listo', entregado: 'Entregado' };
-const ICONO_PASO = { pendiente: '📥', preparando: '🍳', listo: '✅', entregado: '🛵' };
+// ----- DETALLE DEL PEDIDO (según el diseño) -----
+// Los tres pasos del diseño; "Finalizar" marca el pedido como entregado
+const PASOS = [
+  { estado: 'pendiente', nombre: 'Recibido' },
+  { estado: 'preparando', nombre: 'En preparación' },
+  { estado: 'listo', nombre: 'Listo' }
+];
+const SVG_TEL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3h3l1.5 4-2 1.5a11 11 0 0 0 5.4 5.4l1.5-2 4 1.5v3A2.5 2.5 0 0 1 17.5 19 14.5 14.5 0 0 1 5 6.5 2.5 2.5 0 0 1 6.6 3z"/></svg>';
 
 function renderDetalle() {
   const p = buscarPedido(pedidoActual);
-  if (!p) { $('dt-titulo').textContent = 'Pedido'; $('dt-contenido').innerHTML = '<p>Pedido no encontrado.</p>'; return; }
-  $('dt-titulo').textContent = `Pedido #${p.id}`;
-  const idx = ORDEN_ESTADOS.indexOf(p.estado);
+  if (!p) { $('dt-contenido').innerHTML = '<p>Pedido no encontrado.</p>'; return; }
+  const entregado = p.estado === 'entregado';
+  const idx = entregado ? PASOS.length : PASOS.findIndex((x) => x.estado === p.estado);
 
-  // Línea de tiempo: cada paso se puede tocar para cambiar el estado
-  const pasos = ORDEN_ESTADOS.map((est, i) => `
-    <button type="button" class="paso-tiempo ${i <= idx ? 'paso-tiempo--hecho' : ''} ${i === idx ? 'paso-tiempo--actual' : ''}" data-estado="${est}">
-      <span class="paso-tiempo__punto">${ICONO_PASO[est]}</span>
-      <span class="paso-tiempo__nombre">${NOMBRE_PASO[est]}</span>
-      <small>${p.tiempos && p.tiempos[est] ? formatoHora(p.tiempos[est]) : '—'}</small>
+  // Platillos con foto, precio y cantidad
+  const items = p.items.map((i) => `
+    <div class="dt-item">
+      ${htmlFoto(i.platillo)}
+      <div class="dt-item__datos"><b>${esc(i.platillo)}</b><span>${dinero(i.precio)} &nbsp;x${i.n}</span>${i.para ? `<small>para ${esc(i.para)}</small>` : ''}</div>
+      <i aria-hidden="true">›</i>
+    </div>`).join('');
+
+  // Línea de tiempo de 3 pasos (se puede tocar cada paso)
+  const pasos = PASOS.map((s, i) => `
+    <button type="button" class="dt-paso ${i < idx ? 'dt-paso--hecho' : ''} ${i === idx ? 'dt-paso--actual' : ''} ${i === PASOS.length - 1 ? 'dt-paso--ultimo' : ''}" data-estado="${s.estado}">
+      <span class="dt-paso__punto"></span><span class="dt-paso__nombre">${s.nombre}</span>
+      <small>${p.tiempos && p.tiempos[s.estado] ? formatoHora(p.tiempos[s.estado]) : ''}</small>
     </button>`).join('');
 
-  const items = p.items.map((i) => `
-    <div class="fila-item"><span><b>${i.n} ×</b> ${esc(i.platillo)}${i.para ? `<small class="suave"> — para ${esc(i.para)}</small>` : ''}</span><b>${dinero(i.n * i.precio)}</b></div>`).join('');
-  const maps = p.tipo === 'domicilio' && p.direccion ? `<a class="boton boton--sec boton--enlace" target="_blank" rel="noopener" href="${enlaceMaps(p)}">📍 Abrir dirección en Maps</a>` : '';
-  const wa = p.telefono ? `<a class="boton boton--sec boton--enlace" target="_blank" rel="noopener" href="${enlaceWhatsApp(p)}">💬 Avisar por WhatsApp</a>` : '';
+  const detalleEntrega = p.tipo === 'domicilio' && p.direccion
+    ? `<a class="dt-dir" target="_blank" rel="noopener" href="${enlaceMaps(p)}">📍 ${esc(p.direccion)}</a>` : `<span class="dt-tipo">${TEXTO_TIPO[p.tipo] || ''}</span>`;
 
   $('dt-contenido').innerHTML = `
-    <div class="tarjeta perfil__cabecera">
-      <div class="avatar avatar--grande">${esc(iniciales(p.cliente))}</div>
-      <div style="flex:1"><div class="perfil__nombre">${esc(p.cliente)}</div>
-        <div class="suave">${p.telefono ? '📞 ' + esc(p.telefono) + '<br>' : ''}${fechaLarga(p.fecha, p.hora)} · ${TEXTO_TIPO[p.tipo] || ''}</div>
-        ${p.direccion ? `<div class="suave">📍 ${esc(p.direccion)}</div>` : ''}
-        <div style="margin-top:8px">${etiquetaEstado(p)}</div>
-      </div>
+    <div class="dt-cab">
+      <div><b class="dt-num">#${p.id}</b><span class="dt-fecha">${formatoHora(p.hora)} • ${fechaLarga(p.fecha)}</span></div>
+      <span class="pill pill--${p.estado}">${TEXTO_ESTADO[p.estado]}</span>
     </div>
-    <p class="seccion">Platillos</p>
-    <div class="tarjeta">
-      ${items}
-      <div class="fila-item fila-item--total"><span>Total</span><b>${dinero(totalPedido(p))}</b></div>
-      <div class="fila-item"><span>Pago</span><button type="button" class="etiqueta ${p.pagado ? 'etiqueta--pagado' : 'etiqueta--cobrar'}" data-accion="pago">${p.pagado ? 'Pagado' : 'Por cobrar'} ↻</button></div>
-      <div class="fila-item"><span>Método</span><span>${esc(p.metodo || 'Efectivo')}</span></div>
+    <div class="dt-cliente">
+      <div><small>Cliente</small><b>${esc(p.cliente)}</b>${detalleEntrega}</div>
+      ${p.telefono ? `<a class="dt-tel" target="_blank" rel="noopener" href="${enlaceWhatsApp(p)}" aria-label="Avisar por WhatsApp">${SVG_TEL}</a>` : ''}
     </div>
-    <p class="seccion">Estado del pedido <small class="suave">(toca para cambiar)</small></p>
-    <div class="tarjeta linea-tiempo">${pasos}</div>
-    ${maps}${wa}
-    <div class="acciones acciones--3">
-      <button type="button" class="boton boton--chico boton--sec" data-accion="editar">✏️ Editar</button>
-      <button type="button" class="boton boton--chico boton--sec" data-accion="cancelar">🗑️ Cancelar</button>
-      <button type="button" class="boton boton--chico" data-accion="finalizar" ${p.estado === 'entregado' ? 'disabled' : ''}>Finalizar</button>
-    </div>`;
+    <h3 class="dt-sub">Platillos</h3>
+    <div class="dt-items">${items}</div>
+    <div class="dt-total">
+      <button type="button" class="etiqueta ${p.pagado ? 'etiqueta--pagado' : 'etiqueta--cobrar'}" data-accion="pago">${p.pagado ? 'Pagado' : 'Por cobrar'} ↻</button>
+      <b>${dinero(totalPedido(p))}</b>
+    </div>
+    <h3 class="dt-sub">Estado del pedido</h3>
+    <div class="dt-linea">${pasos}</div>
+    <div class="dt-botones">
+      <button type="button" class="dt-btn dt-btn--editar" data-accion="editar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Editar</button>
+      <button type="button" class="dt-btn dt-btn--ok" data-accion="finalizar" ${entregado ? 'disabled' : ''}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>${entregado ? 'Entregado' : 'Finalizar'}</button>
+    </div>
+    <button type="button" class="enlace enlace--peligro" data-accion="cancelar">Cancelar pedido</button>`;
 }
 
 // Cambia el estado de un pedido y guarda la hora en que se hizo
@@ -223,15 +269,6 @@ $('dt-contenido').addEventListener('click', (e) => {
     cambiarEstado(p, 'entregado'); renderDetalle();
     mostrarAviso(p.pagado ? 'Pedido finalizado.' : 'Pedido entregado. Recuerda cobrarlo.');
   }
-  if (acc.dataset.accion === 'editar') mostrarAviso('Editar pedido: esta pantalla aún no está diseñada.');
+  if (acc.dataset.accion === 'editar') { pedidoEditando = p.id; abrirPantalla('nuevo'); }
   if (acc.dataset.accion === 'cancelar') cancelarPedidoActual();
 });
-
-// Menú de los tres puntitos del detalle
-$('dt-menu').addEventListener('click', () => { $('hoja-dt').hidden = false; });
-$('dt-op-wa').addEventListener('click', () => {
-  const p = buscarPedido(pedidoActual); $('hoja-dt').hidden = true;
-  if (p && p.telefono) window.open(enlaceWhatsApp(p), '_blank', 'noopener'); else mostrarAviso('Este cliente no tiene teléfono guardado.');
-});
-$('dt-op-editar').addEventListener('click', () => { $('hoja-dt').hidden = true; mostrarAviso('Editar pedido: esta pantalla aún no está diseñada.'); });
-$('dt-op-cancelar').addEventListener('click', () => { $('hoja-dt').hidden = true; cancelarPedidoActual(); });

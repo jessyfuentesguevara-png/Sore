@@ -3,19 +3,12 @@
 let diaPedidos = 'hoy';        // "hoy" o "manana"
 let filtroPedidos = 'todos';   // "todos", "proceso" o "listos"
 
-// Fotos PROVISIONALES de platillos (recortadas del diseño; se reemplazan por fotos reales)
-const FOTOS_PLATILLOS = {
-  'Huevos al gusto': 'img/platillos/huevos.jpg',
-  'Chilaquiles': 'img/platillos/chilaquiles.jpg',
-  'Enchiladas': 'img/platillos/enchiladas.jpg',
-  'Enchiladas de pollo': 'img/platillos/enchiladas.jpg',
-  'Milanesa': 'img/platillos/milanesa.jpg'
-};
-// Foto del platillo; si no hay, un recuadro con un plato
-function htmlFoto(platillo) {
-  const src = FOTOS_PLATILLOS[platillo];
-  return src ? `<img class="foto-plato" src="${src}" alt="">` : '<span class="foto-plato foto-plato--vacia" aria-hidden="true">🍽️</span>';
+// Foto a partir de su dirección (archivo o foto subida); si no hay, un recuadro con un plato
+function htmlFotoSrc(src) {
+  return src ? `<img class="foto-plato" src="${esc(src)}" alt="">` : '<span class="foto-plato foto-plato--vacia" aria-hidden="true">🍽️</span>';
 }
+// Foto de un platillo buscándolo por nombre en el menú del usuario
+function htmlFoto(nombrePlatillo) { return htmlFotoSrc(fotoDePlatillo(nombrePlatillo)); }
 
 // Enlaces de WhatsApp y Maps (también los usa el detalle del pedido)
 function mensajeWhatsApp(p) {
@@ -131,6 +124,6 @@ function renderPedidos() {
 document.addEventListener('click', (e) => {
   const dia = e.target.closest('.dia-tab');
   if (dia) { diaPedidos = dia.dataset.dia; renderPedidos(); return; }
-  const filtro = e.target.closest('.filtro');
+  const filtro = e.target.closest('.filtro[data-filtro]');
   if (filtro) { filtroPedidos = filtro.dataset.filtro; renderPedidos(); }
 });

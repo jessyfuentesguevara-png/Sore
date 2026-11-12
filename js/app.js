@@ -12,7 +12,10 @@ const pantallas = {
   nuevo: document.getElementById('pantalla-nuevo'),
   detalle: document.getElementById('pantalla-detalle'),
   cliente: document.getElementById('pantalla-cliente'),
-  notif: document.getElementById('pantalla-notif')
+  notif: document.getElementById('pantalla-notif'),
+  configuracion: document.getElementById('pantalla-configuracion'),
+  platillos: document.getElementById('pantalla-platillos'),
+  platillo: document.getElementById('pantalla-platillo')
 };
 const aviso = document.getElementById('aviso');
 const formLogin = document.getElementById('form-login');
@@ -64,6 +67,8 @@ function mostrarPantalla(nombre, conservarPila) {
   if (nombre === 'nuevo') prepararNuevoPedido();
   if (nombre === 'detalle') renderDetalle();
   if (nombre === 'cliente') renderCliente();
+  if (nombre === 'platillos') renderPlatillos();
+  if (nombre === 'platillo') prepararPlatillo();
 }
 
 // Después de iniciar sesión: si falta la configuración inicial va ahí; si no, al inicio

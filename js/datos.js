@@ -21,18 +21,34 @@ function fechaLarga(iso, hora) {
   return `${d} ${meses[m - 1]} ${a}` + (hora ? ` · ${formatoHora(hora)}` : '');
 }
 
-// ----- Catálogo de platillos (de ejemplo, para elegir en Nuevo pedido) -----
-const PLATILLOS = [
-  { nombre: 'Huevos al gusto', precio: 60 },
-  { nombre: 'Chilaquiles', precio: 70 },
-  { nombre: 'Enchiladas', precio: 80 },
-  { nombre: 'Enchiladas de pollo', precio: 80 },
-  { nombre: 'Milanesa', precio: 95 },
-  { nombre: 'Café de olla', precio: 25 },
-  { nombre: 'Agua de Jamaica', precio: 25 },
-  { nombre: 'Flan', precio: 35 }
-];
+// ----- Platillos del usuario (su menú personal, con foto y precio) -----
+const CLAVE_PLATILLOS = 'sore_platillos';
+const CATEGORIAS = ['Desayunos', 'Almuerzos', 'Bebidas', 'Postres', 'Otros'];
 
+// Menú de ejemplo la primera vez; luego la persona lo edita a su gusto
+function platillosEjemplo() {
+  const p = (id, nombre, precio, categoria, foto) => ({ id, nombre, precio, costo: null, categoria, foto: foto || '', disponible: true });
+  return [
+    p(1, 'Huevos al gusto', 60, 'Desayunos', 'img/platillos/huevos.jpg'),
+    p(2, 'Chilaquiles', 70, 'Desayunos', 'img/platillos/chilaquiles.jpg'),
+    p(3, 'Enchiladas', 80, 'Almuerzos', 'img/platillos/enchiladas.jpg'),
+    p(4, 'Enchiladas de pollo', 80, 'Almuerzos', 'img/platillos/enchiladas.jpg'),
+    p(5, 'Milanesa', 95, 'Almuerzos', 'img/platillos/milanesa.jpg'),
+    p(6, 'Café de olla', 25, 'Bebidas'),
+    p(7, 'Agua de Jamaica', 25, 'Bebidas'),
+    p(8, 'Flan', 35, 'Postres')
+  ];
+}
+
+// Se llenan en memoria al abrir la app (lectura y guardado en el celular)
+let PLATILLOS = (function () {
+  try { const t = localStorage.getItem(CLAVE_PLATILLOS); if (t) return JSON.parse(t); } catch (e) { /* sin almacenamiento */ }
+  return platillosEjemplo();
+})();
+function guardarPlatillos() { try { localStorage.setItem(CLAVE_PLATILLOS, JSON.stringify(PLATILLOS)); } catch (e) { /* sin almacenamiento o lleno */ } }
+function siguienteIdPlatillo() { return PLATILLOS.reduce((m, p) => Math.max(m, p.id), 0) + 1; }
+// Foto de un platillo por su nombre ('' si no tiene)
+function fotoDePlatillo(nombre) { const p = PLATILLOS.find((x) => x.nombre === nombre); return p ? p.foto : ''; }
 // ----- Pedidos de ejemplo (las fechas se calculan a partir de hoy) -----
 function ejemploPedidos() {
   const p = (id, dias, hora, cliente, tel, dir, tipo, estado, pagado, items, metodo) => ({
@@ -84,7 +100,7 @@ function siguienteId() { return PEDIDOS.reduce((m, p) => Math.max(m, p.id), 1000
 function eliminarPedido(id) { PEDIDOS = PEDIDOS.filter((p) => p.id !== id); guardarPedidos(); }
 function hayEjemplos() { return PEDIDOS.some((p) => p.ejemplo); }
 function borrarEjemplos() { PEDIDOS = PEDIDOS.filter((p) => !p.ejemplo); guardarPedidos(); }
-function restablecerEjemplos() { PEDIDOS = PEDIDOS.filter((p) => !p.ejemplo).concat(ejemploPedidos()); guardarPedidos(); }
+function restablecerEjemplos() { PEDIDOS = PEDIDOS.filter((p) => !p.ejemplo).concat(ejemploPedidos()); guardarPedidos(); PLATILLOS = platillosEjemplo(); guardarPlatillos(); }
 
 // Pedidos de un día ('hoy' o 'manana'), ordenados por hora de entrega
 function obtenerPedidos(dia) {
