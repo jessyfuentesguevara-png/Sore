@@ -2,7 +2,7 @@
 const VERSION = 'sore-v2';
 
 // Archivos que se guardan para que la app abra sin internet
-const ARCHIVOS = ['./', 'index.html', 'css/styles.css', 'js/app.js'];
+const ARCHIVOS = ['./', 'index.html', 'css/styles.css', 'js/app.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 // Al instalarse: guarda en caché los archivos básicos
 self.addEventListener('install', (e) => {
